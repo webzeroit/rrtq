@@ -52,4 +52,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'Home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
-$route['public/GeneraPDF/(:num)'] = 'public/GeneraPDF/index/$1'; // Example 4
+$route['public/GeneraPDF/(:num)'] = 'public/GeneraPDF/index/$1';
+$route['public/GeneraPDF/(:num)/(:any)'] = 'public/GeneraPDF/index/$1/$2';
