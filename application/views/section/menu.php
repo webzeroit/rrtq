@@ -19,7 +19,6 @@
                             $resp_usr = $this->config->item('role_responsabile');
                             if ( $this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr) ) { ?>
                             <li><a href="<?php echo base_url('admin/export') ?>">Interscambio dati ATLANTE</a></li>
-                            <li><a href="#">Decreti</a></li>
                         <?php } ?>
                     </ul>
                 </li>
