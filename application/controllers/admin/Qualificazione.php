@@ -80,7 +80,7 @@ class Qualificazione extends MY_Controller_Admin
             array(
                 'field' => 'titolo_profilo',
                 'label' => 'Titolo qualificazione',
-                'rules' => 'required|min_length[10]|max_length[255]',
+                'rules' => 'required|max_length[255]',
             ),
             array(
                 'field' => 'id_ada[]',
