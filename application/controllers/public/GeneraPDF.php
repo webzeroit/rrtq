@@ -45,16 +45,20 @@ class GeneraPDF extends CI_Controller
                 $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
                 break;
             case 2:
-                $des_stato_profilo = "In Revisione";
-                if ($live == 1)
-                     $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
-                else
-                    $file_qualificazione = unserialize($profilo_live['file_qualificazione']);
-                break;
-            case 3:
-                $des_stato_profilo = "Non Pubblicato";
-                if ($live == 1)
+                if ($live == 1) {
                     $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
+                    $des_stato_profilo = "In Revisione";
+                }
+                else
+                {
+                    $file_qualificazione = unserialize($profilo_live['file_qualificazione']);
+                }
+                break;
+            case 3:                
+                if ($live == 1){
+                    $des_stato_profilo = "Non Pubblicato";
+                    $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
+                }
                 else
                     show_404();
                 break;
