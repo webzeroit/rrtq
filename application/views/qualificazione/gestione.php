@@ -156,10 +156,25 @@
                             </div>                            
                         </div>
                     <?php } ?>
+                    
+                   
+                    
                     <?php echo form_hidden('id_profilo', $id_profilo); ?>
                     <?php echo form_hidden('action', $action); ?>                    
                     <div class="text-xs-right">
                         <button type="submit" class="btn btn-info">Salva</button>
+                        <?php 
+                        $resp_usr = $this->config->item('role_responsabile');
+                        if ($this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr))
+                        {
+                            if ($profilo['id_stato_profilo'] == 2)
+                            {
+                            ?>
+                            <a href="<?php echo base_url('/public/GeneraPDF/'.$id_profilo.'/1') ?>" class="btn btn-secondary" target="_blank">Scarica PDF in revisione</a>
+                            <?php
+                            }
+                        }
+                        ?>                        
                         <button type="button" id="btn_reset" class="btn btn-inverse">Indietro</button>
                     </div>                    
                 </form>
