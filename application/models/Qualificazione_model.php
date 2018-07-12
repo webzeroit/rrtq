@@ -108,7 +108,7 @@ class Qualificazione_model extends MY_Model
         $query = $this->db->get();
         return $query->result_array();
     }
-    
+
     public function list_competenza_cp2011($id)
     {
         $this->db->from('rrtq_competenza_cp2011');
@@ -116,7 +116,11 @@ class Qualificazione_model extends MY_Model
         $this->db->where('id_competenza', $id);
         $query = $this->db->get();
         return $query->result_array();
-    }    
+    }
+
+    /*
+     * Estrae la qualificazione completa
+     */
 
     public function select_qualificazione($id)
     {
@@ -191,6 +195,199 @@ class Qualificazione_model extends MY_Model
                 ));
                 return TRUE;
             }
+        }
+    }
+
+    /*
+     * Genera la qualificazione in HTML per lanciare il Diff Checker
+     * il flag revisione indica se selezionare la qualificazione che 
+     * è attualmente in modifica (1) oppure l'ultima pubblicata presente
+     * nella colonna serialized del DB (0)
+     */
+    public function select_qualificazione_html($id, $revisione = 0)
+    {
+
+        if ($revisione == 1)
+        {
+            //Com'è adesso
+            $file_qualificazione = $this->select_qualificazione($id);
+        }
+        else
+        {
+            //Com'era prima
+            $file_qualificazione = $this->select_qualificazione_serialized($id);
+        }
+        /*
+         * Verifica se per un qualsiasi motivo la qualificazione, 
+         * principalmente quella serializzata, non è disponibile
+         */
+        if (!empty($file_qualificazione))
+        {
+            $profilo = $file_qualificazione['profilo'];
+
+            $profilo_processo = $file_qualificazione["profilo"]["processo"];
+            $str_profilo_processo = "";
+            if (!empty($profilo_processo))
+            {
+                foreach ($profilo_processo as $item)
+                {
+                    $str_profilo_processo .= $item['descrizione_processo'] . "<br/>";
+                }
+            }
+            //SEQUENZA DI PROCESSO
+            $profilo_seq_processo = $file_qualificazione["profilo"]["seq_processo"];
+            $str_profilo_seq_processo = "";
+            if (!empty($profilo_seq_processo))
+            {
+                foreach ($profilo_seq_processo as $item)
+                {
+                    $str_profilo_seq_processo .= $item['descrizione_sequenza'] . "<br/>";
+                }
+            }
+            // ADA
+            $profilo_ada = $file_qualificazione["profilo"]["ada"];
+            $str_profilo_ada = "";
+            if (!empty($profilo_ada))
+            {
+                foreach ($profilo_ada as $item)
+                {
+                    $str_profilo_ada .= $item['codice_ada'] . " - " . $item['descrizione_ada'] . "<br/>";
+                }
+            }
+            // CP 2011
+            $profilo_cp2011 = $file_qualificazione["profilo"]["cp2011"];
+            $str_profilo_cp2011 = "";
+            foreach ($profilo_cp2011 as $item)
+            {
+                $str_profilo_cp2011 .= $item['codice_cp2011'] . " - " . $item['descrizione_cp2011'] . "<br/>";
+            }
+            //ATECO 2007
+            $profilo_ateco2007 = $file_qualificazione["profilo"]["ateco2007"];
+            $str_profilo_ateco2007 = "";
+            foreach ($profilo_ateco2007 as $item)
+            {
+                $str_profilo_ateco2007 .= $item['codice_ateco'] . " - " . $item['descrizione_ateco'] . "<br/>";
+            }
+
+            $profilo_competenza = $file_qualificazione["profilo"]["competenze"];
+            /*
+             * Fine estrazione dati del profilo
+             * Inizio la composizione dell'HTML
+             */
+            $html = "";
+            $html .= '
+            <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
+                <tr style="background-color:#D9D9D9;">
+                    <td colspan="2" align="center" width="510" height="40"><b>SETTORE ECONOMICO PROFESSIONALE<br/><br/><i>' . $profilo['descrizione_sep'] . '</i></b></td>
+                </tr>    
+                <tr>
+                    <td width="25%"><b>Processo</b></td>
+                    <td width="75%">' . $str_profilo_processo . '</td>
+                </tr>
+                <tr>
+                    <td><b>Sequenza di processo</b></td>
+                    <td>' . $str_profilo_seq_processo . '</td>
+                </tr>  
+                <tr>
+                    <td><b>Area di Attivit&agrave;</b></td>
+                    <td>' . $str_profilo_ada . '</td>
+                </tr>                
+                <tr>
+                    <td><b>Qualificazione regionale</b></td>
+                    <td>' . $profilo['titolo_profilo'] . '</td>
+                </tr> 
+                <tr>
+                    <td><b>Referenziazioni</b></td>
+                    <td><i>Nomenclatura delle unit&agrave; Professionali (NUP/CP ISTAT 2011)</i>:<br/>
+                    ' . $str_profilo_cp2011 . '
+                    <br/>
+                    <i>Classificazione delle attivit&agrave; economiche (ATECO 2007/ISTAT)</i>:<br/>
+                    ' . $str_profilo_ateco2007 . '
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Livello EQF</b></td>
+                    <td>' . $profilo['livello_eqf'] . '</td>
+                </tr>
+                <tr>
+                    <td><b>Descrizione sintetica della qualificazione e delle attivit&agrave;</b></td>
+                    <td>' . $profilo['descrizione_profilo'] . '</td>
+                </tr>                 
+                <tr>
+                    <td><b>Regolamentata</b></td>
+                    <td>' . ($profilo['flg_regolamentato'] == 1 ? 'SI' : 'NO') . '</td>
+                </tr>                                 
+            </table>
+            <br/><br/>';
+
+            $prog_competenza = 1;
+            $num_competenze = count($profilo_competenza);
+
+            foreach ($profilo_competenza as $competenza)
+            {
+
+                $competenza_abilita = $competenza['abilita'];
+                $str_abilita = "";
+                foreach ($competenza_abilita as $item)
+                {
+                    $str_abilita .= "<li>" . $item['descrizione_abilita'] . "</li>";
+                }
+                $competenza_conoscenza = $competenza['conoscenza'];
+                $str_conoscenze = "";
+                foreach ($competenza_conoscenza as $item)
+                {
+                    $str_conoscenze .= "<li>" . $item['descrizione_conoscenza'] . "</li>";
+                }
+
+                $html .= '
+                <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
+                    <tr style="background-color:#D9D9D9;">
+                        <td colspan="2" align="center" width="100%"><b>COMPETENZA N. ' . $prog_competenza . ' - Titolo</b><br/>' . $competenza['titolo_competenza'] . '</td>
+                    </tr>    
+                    <tr style="background-color:#D9D9D9;">
+                        <td colspan="2" align="center"><b>Risultato atteso</b><br/>' . $competenza['risultato_competenza'] . '</td>
+                    </tr>  
+                    <tr style="background-color:#D9D9D9;">
+                        <td align="center" width="50%"><b>Abilit&agrave;</b></td>
+                        <td align="center" width="50%"><b>Conoscenze</b></td>
+                    </tr>     
+                    <tr>
+                        <td>
+                        <ul>
+                            ' . $str_abilita . '
+                        </ul>
+                        </td>
+                        <td>
+                            <ul>
+                             ' . $str_conoscenze . '                         
+                            </ul>
+                        </td>
+                    </tr>
+                </table>';
+
+
+                $html .= '<br/><p><b>Indicazioni per la valutazione delle competenze</b></p>
+                <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
+                    <tr style="background-color:#D9D9D9;">
+                        <td align="center" width="33%"><b>Titolo competenza e Risultato atteso</b></td>
+                        <td align="center" width="33%"><b>Oggetto di osservazione</b></td>
+                        <td align="center" width="34%"><b>Indicatori</b></td>
+                    </tr>
+                    <tr>
+                        <td>' . $competenza['titolo_competenza'] . "<br/>" . $competenza['risultato_competenza'] . '</td>
+                        <td>' . $competenza['oggetto_di_osservazione'] . '</td>
+                        <td>' . $competenza['indicatori'] . '</td>
+                    </tr>
+                </table>';
+
+                $prog_competenza++;
+                if ($prog_competenza <= $num_competenze)
+                {
+                    $html .= "<br/><br/><br/><br/><br/>";
+                }
+            }
+            
+            return $html;
         }
     }
 

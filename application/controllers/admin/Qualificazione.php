@@ -65,6 +65,39 @@ class Qualificazione extends MY_Controller_Admin
         $this->load->view('qualificazione/gestione', $data);
     }
 
+    public function difftool($id_profilo = NULL)
+    {
+        if ($id_profilo !== NULL)
+        {
+            $this->output->unset_template();
+            $this->load->model('qualificazione_model');
+            $prima = $this->qualificazione_model->select_qualificazione_html($id_profilo, 0);
+            if (!isset($prima))
+            {
+                echo "<h1>Nessuna versione precedente disponibile al confronto</h1>";
+            }
+            else
+            {
+                $dopo = $this->qualificazione_model->select_qualificazione_html($id_profilo, 1);
+                $htmlDiff = new Caxy\HtmlDiff\HtmlDiff($prima, $dopo);
+                $htmlDiff->getConfig()
+                        ->setPurifierCacheLocation('application/cache/purifier/')
+                        ->setInsertSpaceInReplace(true)
+                        ->setGroupDiffs(true)
+                        ->setUseTableDiffing(true);
+
+                $content_extra = "
+            <style> 
+                ins {color: #333333;background-color: #41ff32; text-decoration: none;}
+                del {color: #AA3333;background-color: #ffeaea;text-decoration: line-through;}
+            </style>
+            <center><i>Diff-Check effettuato il " . date('d/m/Y H:i') . "<i></center><br><br>";
+                $content = $htmlDiff->build();
+                echo $content_extra . $content;
+            }
+        }
+    }
+
     /*
      * AJAX CALLS
      */
