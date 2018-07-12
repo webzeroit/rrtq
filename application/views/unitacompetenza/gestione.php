@@ -43,8 +43,8 @@
                     <div class="form-group">
                         <h5>Livello EQF <span class="text-danger">*</span></h5>
                         <input type="text" name="livello_eqf" class="form-control"
-                        value="<?php echo set_value('livello_eqf', $competenza['livello_eqf']); ?>">
-                        <div class="form-control-feedback"> <small><i>Consulta la pagina dei <a href="https://ec.europa.eu/ploteus/content/descriptors-page" target="_blank">descrittori ufficiali</a></i> </small> </div>
+                               value="<?php echo set_value('livello_eqf', $competenza['livello_eqf']); ?>">
+                        <div class="form-control-feedback"><small>Consulta la pagina dei <a href="https://ec.europa.eu/ploteus/content/descriptors-page" target="_blank">descrittori ufficiali</a></small> </div>
                     </div>  
                     <div class="form-group">
                         <h5>Referenziazione CP 2011</h5>
@@ -73,7 +73,8 @@
                                     <?php
                                 }
                                 ?>
-                            </select>   
+                            </select>
+                            <div class="form-control-feedback"><small>Puoi aggiungere una <a id="btn_add_abilita" href="#" data-toggle="modal" data-target="#abilitaModal">nuova abilità</a> se la ricerca non ha prodotto risultati</small></div>
                         </div>
                     </div> 
                     <div class="form-group m-t-40 m-b-40">
@@ -89,6 +90,7 @@
                                 }
                                 ?>
                             </select>   
+                            <div class="form-control-feedback"><small>Puoi aggiungere una <a id="btn_add_conoscenza" href="#" data-toggle="modal" data-target="#conoscenzaModal">nuova conoscenza</a> se la ricerca non ha prodotto risultati</small></div>
                         </div>
                     </div>                       
                     <?php echo form_hidden('id_competenza', $id_competenza); ?>
@@ -102,7 +104,13 @@
         </div>
     </div>
 </div>
-<?php if ($action === "edit") { ?>
+
+
+
+
+
+<?php if ($action === "edit")
+{ ?>
 
     <!-- TABELLA PROFILI CHE UTILIZZANO LA COMPETENZA -->
     <div class="row m-t-5">
@@ -135,6 +143,61 @@
 
 <?php } ?>
 
+<!-- MODAL ABILITA -->
+<div class="modal fade" id="abilitaModal" tabindex="-1" role="dialog" aria-labelledby="abilitaModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="abilitaModalLabel1">Nuova Abilita</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <form id="frm_dati_abilita" autocomplete="off">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <h5>Descrizione abilità <span class="text-danger">*</span></h5>
+                        <div class="controls">
+                            <textarea id="descrizione_abilita" name="descrizione_abilita" rows="7" maxlength="1000" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-control-feedback"><small><i>Max 1000 caratteri</i></small></div>
+                    </div>   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+                    <button type="submit" class="btn btn-info">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- MODAL CONOSCENZA -->
+<div class="modal fade" id="conoscenzaModal" tabindex="-1" role="dialog" aria-labelledby="conoscenzaModalLabel1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="conoscenzaModalLabel1">Nuova Conoscenza</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <form id="frm_dati_conoscenza" autocomplete="off">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <h5>Descrizione conoscenza <span class="text-danger">*</span></h5>
+                        <div class="controls">
+                            <textarea id="descrizione_conoscenza" name="descrizione_conoscenza" rows="7" maxlength="1000" class="form-control" required></textarea>
+                        </div>                        
+                        <div class="form-control-feedback"><small><i>Max 1000 caratteri</i></small></div>
+                    </div>   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Chiudi</button>
+                    <button type="submit" class="btn btn-info">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
 <script language="javascript" type="text/javascript">
     var tabella_profili_competenza;
 
@@ -145,7 +208,7 @@
                 language: "it",
                 placeholder: "",
                 allowClear: true,
-                minimumInputLength: 5,
+                minimumInputLength: 4,
                 ajax: {
                     url: baseURL + 'admin/unitacompetenza/search_abilita_json',
                     dataType: 'json',
@@ -171,7 +234,7 @@
                 language: "it",
                 placeholder: "",
                 allowClear: true,
-                minimumInputLength: 5,
+                minimumInputLength: 4,
                 ajax: {
                     url: baseURL + 'admin/unitacompetenza/search_conoscenza_json',
                     dataType: 'json',
@@ -192,7 +255,7 @@
                     }
                 }
             });
-                        
+
             $("#codice_cp2011").select2({
                 language: "it",
                 placeholder: "",
@@ -217,9 +280,9 @@
                 error: function () {
                     swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
                 }
-            });            
-            
-            
+            });
+
+
             tabella_profili_competenza = $('#dt_profili_competenza').DataTable({
                 "language": {
                     "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
@@ -311,8 +374,6 @@
             });
         }
 
-
-
         /* Gestione Competenza  */
         $("#btn_reset").on("click", function () {
             window.location.href = baseURL + 'admin/unitacompetenza';
@@ -339,9 +400,52 @@
 
         });
 
+        /* Aggiungi nuova Abilità contestualmente */
+        $("#btn_add_abilita").click( function (e) {
+            e.preventDefault();
+            $('#descrizione_abilita').val('');
+        });
+        
+        $('#frm_dati_abilita').on('submit', function (form) {
+            form.preventDefault();
+            var formData = $("#frm_dati_abilita").serialize();
+            $.ajax({
+                type: 'POST',
+                url: baseURL + 'admin/abilita/save_abilita',
+                cache: false,
+                data: formData + "&id_abilita=&action=add",
+                success: function (data) {
+                    swal("Salva informazioni", data.message, data.esito);
+                    $('#abilitaModal').modal('hide');
+                },
+                error: function () {
+                    swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                }
+            });
 
+        });
+        
+        $('#frm_dati_conoscenza').on('submit', function (form) {
+            form.preventDefault();
+            var formData = $("#frm_dati_conoscenza").serialize();
+            $.ajax({
+                type: 'POST',
+                url: baseURL + 'admin/conoscenza/save_conoscenza',
+                cache: false,
+                data: formData + "&id_conoscenza=&action=add",
+                success: function (data) {
+                    swal("Salva informazioni", data.message, data.esito);
+                    $('#conoscenzaModal').modal('hide');
+                },
+                error: function () {
+                    swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                }
+            });
 
+        });        
     });
 
+
+   
 
 </script>
