@@ -147,6 +147,66 @@ foreach ($indicatori_stato as $stato)
     </div>        
 </div> 
 
+<div class="row">
+    <div class="col-12">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="card-actions">
+                    <a class="" data-action="collapse"><i class="ti-minus"></i></a>
+                    <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
+                </div>                
+                <h4 class="card-title m-b-0">Ultime 10 qualificazioni modificate</h4>                
+            </div>
+            <div class="card-body collapse show">
+                <div class="table-responsive">                    
+                    <table class="table table-hover" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.E.P.</th>
+                                <th>Qualificazione</th>
+                                <th>Data/Ora</th>
+                                <th class="text-center">Stato</th>
+                                <th class="text-center">Azione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($ultime_modifiche as $qual_mod): ?>
+                                <tr>
+                                    <td class="text-center" width="5%"><?php echo $qual_mod['id_sep']; ?></td>
+                                    <td width="65%"><?php echo htmlspecialchars($qual_mod['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td width="15%"><?php echo convertsDataOraInItalianFormat($qual_mod['data_ultima_modifica']); ?></td>
+                                    <td class="text-center" width="10%">
+                                    <?php 
+                                    $stato = '';
+                                    if (intval($qual_mod['id_stato_profilo']) === 1)
+                                        $stato = '<span class="label label-info">' . $qual_mod['des_stato_profilo'] . '</span>';
+                                    else if (intval($qual_mod['id_stato_profilo']) === 2)
+                                        $stato  = '<span class="label label-warning">' . $qual_mod['des_stato_profilo'] . '</span>';
+                                    else if (intval($qual_mod['id_stato_profilo']) === 3)
+                                        $stato = '<span class="label label-danger">' . $qual_mod['des_stato_profilo'] .  '</span>';
+                                    else if (intval($qual_mod['id_stato_profilo']) === 4)
+                                        $stato = '<span class="label label-inverse">' . $qual_mod['des_stato_profilo'] . '</span>';
+                                    
+                                    echo $stato; 
+                                    ?>
+                                    </td>
+                                    <td class="text-center" width="5%">
+                                    <?php 
+                                        $action_link = '<a href="' . base_url() .'admin/qualificazione/gestione/' . $qual_mod['id_profilo'] . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
+                                        //$action_link .= '<a href="' . base_url() . '/public/GeneraPDF/' . $qual_mod['id_profilo'] . '" target="_blank" data-toggle="tooltip" data-original-title="Scarica PDF Pubblicato"><i class="fa fa-file-pdf-o text-danger m-r-5"></i></a>';
+                                        echo $action_link; 
+                                    ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>             
+    </div>              
+</div>
+
+
 <script>
     $(function () {
         "use strict";

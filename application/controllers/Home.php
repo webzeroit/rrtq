@@ -33,9 +33,12 @@ class Home extends MY_Controller_Admin
             $this->data = $this->dash->indicatori_totali();
             $this->data['ultimi_export'] = $this->dash->lista_ultimi_export();
             $this->data['indicatori_stato'] = $this->dash->indicatori_stato();
-            //$this->load->view('welcome_message');
+            $this->data['ultime_modifiche'] = $this->dash->lista_ultimi_profili_mod();
+
             $this->load->view('dashboard', $this->data);
-        } else {
+        }
+        else
+        {
             redirect('admin/qualificazione', 'refresh');
         }
     }
