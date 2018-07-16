@@ -248,23 +248,13 @@
             </div>
         </div>
     </div>
-    
-    <?php
-    $resp_usr = $this->config->item('role_responsabile');
-    if ($this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr))
-    {
-        echo form_hidden('q_tools_show', 1);
-    } else {
-        echo form_hidden('q_tools_show', 0); 
-    }
-    ?>
-    
+       
     <div id="q_tools" class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Controllo delle modifiche</h4>
-                    <h6 class="card-subtitle">I file generati dai tools contengono le ultime modifiche successive all'ultima pubblicazione della qualificazione</h6>
+                    <h6 class="card-subtitle">I file generati dai tools contengono le modifiche successive all'ultima pubblicazione della qualificazione</h6>
                     <div class="button-group">
                         <a href="<?php echo base_url('/public/GeneraPDF/'.$id_profilo.'/1') ?>" target="_blank" class="btn btn-outline-info">Genera PDF</a>
                         <a href="<?php echo base_url('/admin/qualificazione/difftool/'.$id_profilo) ?>" target="_blank" class="btn btn-outline-info">Lancia Diff Checker</a>
@@ -654,10 +644,6 @@
         /* In action=add non lo visualizza */
         var action = $("input[name='action']").val();
         if (action !== 'edit')
-            return;
-        /* Se non ha i privilegi non lo visualizza */
-        var q_tools_show = $("input[name='q_tools_show']").val();
-        if (parseInt(q_tools_show) === 0)
             return;
         var curr_stato = $("#id_stato_profilo").val();
         if (parseInt(curr_stato) > 1)
