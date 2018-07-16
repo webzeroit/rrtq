@@ -173,9 +173,9 @@ foreach ($indicatori_stato as $stato)
                             <?php foreach ($ultime_modifiche as $qual_mod): ?>
                                 <tr>
                                     <td class="text-center" width="5%"><?php echo $qual_mod['id_sep']; ?></td>
-                                    <td width="65%"><?php echo htmlspecialchars($qual_mod['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td width="60%"><?php echo htmlspecialchars($qual_mod['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
                                     <td width="15%"><?php echo convertsDataOraInItalianFormat($qual_mod['data_ultima_modifica']); ?></td>
-                                    <td class="text-center" width="10%">
+                                    <td class="text-center" width="15%">
                                     <?php 
                                     $stato = '';
                                     if (intval($qual_mod['id_stato_profilo']) === 1)
