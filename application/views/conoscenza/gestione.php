@@ -40,7 +40,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Titolo</th>
-                                    <th>Descrizione</th>
+                                    <th>Risultato Atteso</th>
                                     <th>Qualificazioni associate</th>                                
                                     <th>Azione</th>
                                 </tr>
@@ -66,7 +66,7 @@
         if (action === 'edit') {
             $('#dt_competenze_conoscenza').DataTable({
                 "language": {
-                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
                 },
                 "processing": false, //Feature control the processing indicator.
                 "serverSide": true, //Feature control DataTables' server-side processing mode.
@@ -110,7 +110,20 @@
                 cache: false,
                 data: formData,
                 success: function (data) {
-                    swal("Salva informazioni", data.message, data.esito);
+                    if (parseInt(data.id_conoscenza) > 0) {
+                        swal({
+                            title: "Salva dati",
+                            text: "Operazione effettuata con successo",
+                            type: "success"
+                        }, function () { 
+                            if (action === "add")
+                            {
+                                window.location.href = baseURL + "admin/conoscenza/gestione/" + data.id_conoscenza;
+                            } 
+                        });
+                    } else {             
+                        swal("Salva informazioni", data.message, data.esito);
+                    }                                          
                 },
                 error: function () {
                     swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');

@@ -4,9 +4,12 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav"> 
-                <?php 
-                    $resp_usr = $this->config->item('role_responsabile');
-                    if ( $this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr) ) { ?>
+                <?php                     
+                    if ( 
+                        $this->ion_auth->is_admin() || 
+                        $this->ion_auth->in_group($this->config->item('role_responsabile')) || 
+                        $this->ion_auth->in_group($this->config->item('role_supervisore'))
+                        ) { ?>
                     <li> <a class="has-arrow waves-effect waves-dark" href="<?php echo base_url('home') ?>" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
                 <?php } ?>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Repertorio</span></a>
@@ -16,8 +19,8 @@
                         <li><a href="<?php echo base_url('admin/abilita') ?>">Abilità</a></li>
                         <li><a href="<?php echo base_url('admin/conoscenza') ?>">Conoscenze</a></li>
                         <?php 
-                            $resp_usr = $this->config->item('role_responsabile');
-                            if ( $this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr) ) { ?>
+                            if ( $this->ion_auth->is_admin() || 
+                                 $this->ion_auth->in_group($this->config->item('role_supervisore')) ) { ?>
                             <li><a href="<?php echo base_url('admin/export') ?>">Interscambio dati ATLANTE</a></li>
                         <?php } ?>
                     </ul>

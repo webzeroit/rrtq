@@ -2,12 +2,17 @@
 $p = 0;
 $np = 0;
 $r = 0;
+$ra = 0;
+
 foreach ($indicatori_stato as $stato)
 {
     switch (intval($stato["label"]))
     {
-        case 1:
+        case 0:
             $p = $stato["value"];
+            break;
+        case 1:
+            $ra = $stato["value"];
             break;
         case 2:
             $r = $stato["value"];
@@ -85,7 +90,7 @@ foreach ($indicatori_stato as $stato)
 
 
 <div class="row">
-    <div class="col-lg-5 col-md-5">
+    <div class="col-lg-6 col-md-5">
         <div class="card card-default">
             <div class="card-header">
                 <div class="card-actions">
@@ -102,6 +107,10 @@ foreach ($indicatori_stato as $stato)
                         <h4 class="m-b-0"><?php echo $p ?></h4>
                     </li>
                     <li>
+                        <h6 class="text-muted"><i class="fa fa-circle text-success"></i> Revisioni Validate</h6>
+                        <h4 class="m-b-0"><?php echo $ra ?></h4>
+                    </li>                    
+                    <li>
                         <h6 class="text-muted"><i class="fa fa-circle text-warning"></i> In Revisione</h6>
                         <h4 class="m-b-0"><?php echo $r ?></h4>
                     </li>
@@ -114,7 +123,7 @@ foreach ($indicatori_stato as $stato)
             </div>
         </div>        
     </div>
-    <div class="col-lg-7 col-md-5">
+    <div class="col-lg-6 col-md-5">
         <div class="card card-default">
             <div class="card-header">
                 <div class="card-actions">
@@ -178,8 +187,10 @@ foreach ($indicatori_stato as $stato)
                                     <td class="text-center" width="15%">
                                     <?php 
                                     $stato = '';
+                                    if (intval($qual_mod['id_stato_profilo']) === 0)
+                                        $stato = '<span class="label label-info">' . $qual_mod['des_stato_profilo'] . '</span>';                                    
                                     if (intval($qual_mod['id_stato_profilo']) === 1)
-                                        $stato = '<span class="label label-info">' . $qual_mod['des_stato_profilo'] . '</span>';
+                                        $stato = '<span class="label label-success">' . $qual_mod['des_stato_profilo'] . '</span>';
                                     else if (intval($qual_mod['id_stato_profilo']) === 2)
                                         $stato  = '<span class="label label-warning">' . $qual_mod['des_stato_profilo'] . '</span>';
                                     else if (intval($qual_mod['id_stato_profilo']) === 3)
@@ -216,18 +227,25 @@ foreach ($indicatori_stato as $stato)
         // ==============================================================       
         Morris.Donut({
             element: 'morris-donut-chart',
-            data: [{
+            data: [
+                {
                     label: "Pubblicate",
                     value: <?php echo $p ?>
-                }, {
+                }, 
+                {
+                    label: "Revisioni Validate",
+                    value: <?php echo $ra; ?>
+                }, 
+                {
                     label: "In Revisione",
                     value: <?php echo $r; ?>
-                }, {
+                }, 
+                {
                     label: "Non Pubblicate",
                     value: <?php echo $np; ?>
                 }],
             resize: true,
-            colors: ['#1976d2', '#ffb22b', '#ef5350']
+            colors: ['#1976d2', '#26dad2', '#ffb22b', '#ef5350']
         });
         // ============================================================== 
         // sales difference

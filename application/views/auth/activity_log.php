@@ -31,7 +31,7 @@
     $(document).ready(function () {
         table_log = $('#dt_log').DataTable({
             "language": {
-                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
             },
             "processing": false, //Feature control the processing indicator.
             "serverSide": true, //Feature control DataTables' server-side processing mode.

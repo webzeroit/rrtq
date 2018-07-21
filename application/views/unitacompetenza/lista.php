@@ -10,7 +10,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Titolo</th>
-                                <th>Descrizione</th>
+                                <th>Risultato Atteso</th>
+                                <th>Livello EQF</th>
                                 <th>Qualificazioni associate</th>                                
                                 <th>Azione</th>
                             </tr>
@@ -29,7 +30,7 @@
     $(document).ready(function () {
         tabella_competenze = $('#dt_competenza').DataTable({
             "language": {
-                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
             },
             "processing": false, //Feature control the processing indicator.
             "serverSide": true, //Feature control DataTables' server-side processing mode.
@@ -42,10 +43,11 @@
             //Set column definition initialisation properties.
             "columnDefs": [
                 {"targets": [0], "visible": false, "searchable": false},
-                {"targets": [1], "visible": true, "searchable": true, "width": "40%"},
+                {"targets": [1], "visible": true, "searchable": true, "width": "30%"},
                 {"targets": [2], "visible": true, "searchable": true, "width": "40%"},
                 {"targets": [3], "visible": true, "searchable": true, "width": "10%", "className": "text-center"},
-                {"targets": [4], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
+                {"targets": [4], "visible": true, "searchable": true, "width": "10%", "className": "text-center"},
+                {"targets": [5], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
             ],
             "drawCallback": function () {
                 $('[data-toggle="tooltip"]').tooltip();

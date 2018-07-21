@@ -30,7 +30,7 @@
     $(document).ready(function () {
         tabella_qualificazioni = $('#dt_profilo').DataTable({
             "language": {
-                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
             },
             "processing": false, //Feature control the processing indicator.
             "serverSide": true, //Feature control DataTables' server-side processing mode.
@@ -56,8 +56,10 @@
                             return data[3];
                         } else {
                             var stato = '';
-                            if (parseInt(data[3]) === 1)
-                                stato = '<span class="label label-info">' + data[4] + '</span>';
+                            if (parseInt(data[3]) === 0)
+                                stato = '<span class="label label-info">' + data[4] + '</span>';                            
+                            else if (parseInt(data[3]) === 1)
+                                stato = '<span class="label label-success">' + data[4] + '</span>';
                             else if (parseInt(data[3]) === 2)
                                 stato = '<span class="label label-warning">' + data[4] + '</span>';
                             else if (parseInt(data[3]) === 3)
@@ -145,7 +147,42 @@
                 });
             }
         });
-    }        
+    }      
+    
+    function approva_revisione(id)
+    {
+        swal({
+            title: "Sei sicuro?",
+            text: "La revisioni saranno approvate e la qualificazione potrà essere pubblicata",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Si",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                //PROSEGUI		
+                var id_profilo = id;
+                var action = "approve";
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL + 'admin/qualificazione/edita_pubblicazione_json',
+                    cache: false,
+                    data: {id_profilo: id_profilo, action: action},
+                    success: function (data) {
+                        swal("Salva informazioni", data.message, data.esito);
+                        tabella_qualificazioni.ajax.reload();
+                    },
+                    error: function () {
+                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                    }
+                });
+            }
+        });
+    }       
+    
 
     function elimina_pubblicazione(id)
     {

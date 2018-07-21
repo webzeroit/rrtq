@@ -11,13 +11,6 @@
                             <input type="text" id="titolo_competenza" name="titolo_competenza" maxlength="500" class="form-control"
                                    value="<?php echo set_value('titolo_competenza', $competenza['titolo_competenza']); ?>"> 
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <h5>Descrizione competenza <span class="text-danger">*</span></h5>
-                        <div class="controls">
-                            <textarea id="descrizione_competenza" name="descrizione_competenza" rows="7" maxlength="4000" class="form-control"><?php echo set_value('descrizione_competenza', $competenza['descrizione_competenza']); ?></textarea>
-                        </div>
-                        <div class="form-control-feedback"><small><i>Max 4000 caratteri</i></small></div>
                     </div>   
                     <div class="form-group">
                         <h5>Risultato atteso <span class="text-danger">*</span></h5>
@@ -285,7 +278,7 @@
 
             tabella_profili_competenza = $('#dt_profili_competenza').DataTable({
                 "language": {
-                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
                 },
                 "processing": false, //Feature control the processing indicator.
                 "serverSide": true, //Feature control DataTables' server-side processing mode.
@@ -337,8 +330,10 @@
                                 return data[4];
                             } else {
                                 var stato = '';
-                                if (parseInt(data[4]) === 1)
+                                if (parseInt(data[4]) === 0)
                                     stato = '<span class="label label-info">' + data[5] + '</span>';
+                                else if (parseInt(data[4]) === 1)
+                                    stato = '<span class="label label-success">' + data[5] + '</span>';
                                 else if (parseInt(data[4]) === 2)
                                     stato = '<span class="label label-warning">' + data[5] + '</span>';
                                 else if (parseInt(data[4]) === 3)
@@ -375,8 +370,12 @@
         }
 
         /* Gestione Competenza  */
-        $("#btn_reset").on("click", function () {
-            window.location.href = baseURL + 'admin/unitacompetenza';
+        $("#btn_reset").on("click", function () {      
+            var ref = document.referrer;
+            if (ref.indexOf("qualificazione") !== -1)
+                window.history.go(-1);
+            else
+                window.location.href = baseURL + 'admin/unitacompetenza';
         });
 
         $('#frm_dati_competenza').on('submit', function (form) {
@@ -388,9 +387,24 @@
                 cache: false,
                 data: formData,
                 success: function (data) {
-                    swal("Salva informazioni", data.message, data.esito);
-                    if ($.fn.DataTable.isDataTable(tabella_profili_competenza)) {
-                        tabella_profili_competenza.ajax.reload();
+                    if (parseInt(data.id_competenza) > 0) {
+                         swal({
+                            title: "Salva dati",
+                            text: "Operazione effettuata con successo",
+                            type: "success"
+                        }, function () {
+                            if (action === "add")
+                            {
+                                window.location.href = baseURL + "admin/unitacompetenza/gestione/" + data.id_competenza;
+                            } 
+                            else {
+                                if ($.fn.DataTable.isDataTable(tabella_profili_competenza)) {
+                                    tabella_profili_competenza.ajax.reload();
+                                }
+                            }
+                        });
+                    } else {             
+                        swal("Salva informazioni", data.message, data.esito);
                     }
                 },
                 error: function () {

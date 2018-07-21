@@ -220,8 +220,8 @@
             <div class="card">
                 <div class="card-body">   
                     <h4 class="card-title">Unità di Competenza</h4>
-                    <h6 class="card-subtitle">La tabella contiene le unità di competenza associale alla qualificazione. 
-                        Qualsiasi modifica alla composizione delle UC di una qualificazione <i>Pubblicata</i> ne comporterà la
+                    <h6 class="card-subtitle">La tabella contiene le unità di competenza associate alla qualificazione. 
+                        Qualsiasi modifica alla composizione delle UC di una qualificazione <i>Pubblicata</i> o con <i>Revisioni Validate</i> ne comporterà la
                         variazione di stato <i>In Revisione</i>.</h6>            
                     <div div class="table-responsive m-t-5 m-b-40">
                         <table id="dt_competenze_profilo" class="table table-hover table-bordered" cellspacing="0" width="100%">
@@ -234,6 +234,7 @@
                                     <th>Risultato atteso</th>
                                     <th>Oggetto di osservazione</th>
                                     <th>Indicatori</th>
+                                    <th>Livello EQF</th>
                                     <th>Azione</th> 
                                 </tr>                            
                             </thead>
@@ -269,7 +270,130 @@
     
 
     
+<script language="javascript" type="text/javascript">
+    function refresh_stato_qualificazione(id)
+    {
+       $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_stato_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {
+                 $("#data_ultima_modifica").val(data['data_ultima_modifica']);
+                 $("#id_stato_profilo").val(data['id_stato_profilo']);
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         }); 
+    }
+    function carica_campi_processo(id)
+    {
+        $("#processo").empty();
+        $("#seq_processo").empty();
+        $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_processo_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {
+                 $.each(data, function(index) {
+                     $("#processo").append(data[index] + "\n");   
+                 }); 
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         });
+
+         $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_sequenza_processo_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {     
+                 $.each(data, function(index) {
+                     $("#seq_processo").append(data[index] + "\n");   
+                 });                    
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         });             
+    }
+    function carica_competenze_select()
+    {
+        $.ajax({
+            type: 'POST',
+            url: baseURL + 'admin/qualificazione/list_competenza_json',
+            cache: false,
+            async: false,
+            success: function (data) {
+                var newOptions = '<option value=""></option>';
+                $.each(data, function (idx, obj) {
+                    newOptions += '<option value="' + obj.id_competenza + '">' + obj.titolo_competenza + '</option>';
+                });
+                $("#id_competenza").html(newOptions);
+            },
+            error: function () {
+                swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+            }
+        });
+    }
     
+    function del_competenza(id)
+    {
+        swal({
+            title: "Sei sicuro?",
+            text: "Verrà cancellata la riga selezionata",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Si",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                //PROSEGUI		
+                var id_profilo = $("input[name='id_profilo']").val();
+                var action = "delete";
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL + 'admin/qualificazione/save_associazione_competenza',
+                    cache: false,
+                    data: {id_profilo: id_profilo, id_competenza: id, action_competenza: action},
+                    success: function (data) {
+                        swal("Salva informazioni", data.message, data.esito);
+                        tabella_competenze.ajax.reload();
+                        refresh_stato_qualificazione(id_profilo);
+                        display_qtool();
+                    },
+                    error: function () {
+                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                    }
+                });
+            }
+        });
+    }
+    
+    function display_qtool()
+    {
+        /* default invisibile */
+        $('#q_tools').hide();
+        /* In action=add non lo visualizza */
+        var action = $("input[name='action']").val();
+        if (action !== 'edit')
+            return;
+        var curr_stato = $("#id_stato_profilo").val();
+        if (parseInt(curr_stato) > 0)
+            $('#q_tools').show();
+        
+    }
+</script>
     
 <script language="javascript" type="text/javascript">
     var tabella_competenze;
@@ -406,7 +530,7 @@
             
             tabella_competenze = $('#dt_competenze_profilo').DataTable({
                 "language": {
-                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
                 },
                 "processing": false, //Feature control the processing indicator.
                 "serverSide": true, //Feature control DataTables' server-side processing mode.
@@ -426,11 +550,12 @@
                     {"targets": [0], "visible": false, "searchable": false},
                     {"targets": [1], "visible": false, "searchable": false},
                     {"targets": [2], "visible": true, "searchable": true, "width": "40%"},
-                    {"targets": [3], "visible": true, "searchable": true, "width": "50%"},
-                    {"targets": [4], "visible": false, "searchable": false},
+                    {"targets": [3], "visible": false, "searchable": false},
+                    {"targets": [4], "visible": true, "searchable": true, "width": "40%"},
                     {"targets": [5], "visible": false, "searchable": false},
                     {"targets": [6], "visible": false, "searchable": false},
-                    {"targets": [7], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
+                    {"targets": [7], "visible": true, "searchable": true, "width": "10%", "className": "text-center"},
+                    {"targets": [8], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
                 ],
                 "drawCallback": function () {
                     $('[data-toggle="tooltip"]').tooltip();
@@ -529,127 +654,5 @@
         display_qtool();
 
     });
-
-
-    function refresh_stato_qualificazione(id)
-    {
-       $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_stato_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {
-                 $("#data_ultima_modifica").val(data['data_ultima_modifica']);
-                 $("#id_stato_profilo").val(data['id_stato_profilo']);
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         }); 
-    }
-    function carica_campi_processo(id)
-    {
-        $("#processo").empty();
-        $("#seq_processo").empty();
-        $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_processo_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {
-                 $.each(data, function(index) {
-                     $("#processo").append(data[index] + "\n");   
-                 }); 
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         });
-
-         $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_sequenza_processo_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {     
-                 $.each(data, function(index) {
-                     $("#seq_processo").append(data[index] + "\n");   
-                 });                    
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         });             
-    }
-    function carica_competenze_select()
-    {
-        $.ajax({
-            type: 'POST',
-            url: baseURL + 'admin/qualificazione/list_competenza_json',
-            cache: false,
-            async: false,
-            success: function (data) {
-                var newOptions = '<option value=""></option>';
-                $.each(data, function (idx, obj) {
-                    newOptions += '<option value="' + obj.id_competenza + '">' + obj.titolo_competenza + '</option>';
-                });
-                $("#id_competenza").html(newOptions);
-            },
-            error: function () {
-                swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-            }
-        });
-    }
-    function del_competenza(id)
-    {
-        swal({
-            title: "Sei sicuro?",
-            text: "Verrà cancellata la riga selezionata",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Si",
-            cancelButtonText: "No",
-            closeOnConfirm: false,
-            closeOnCancel: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                //PROSEGUI		
-                var id_profilo = $("input[name='id_profilo']").val();
-                var action = "delete";
-                $.ajax({
-                    type: 'POST',
-                    url: baseURL + 'admin/qualificazione/save_associazione_competenza',
-                    cache: false,
-                    data: {id_profilo: id_profilo, id_competenza: id, action_competenza: action},
-                    success: function (data) {
-                        swal("Salva informazioni", data.message, data.esito);
-                        tabella_competenze.ajax.reload();
-                        refresh_stato_qualificazione(id_profilo);
-                    },
-                    error: function () {
-                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-                    }
-                });
-            }
-        });
-    }
-    function display_qtool()
-    {
-        /* default invisibile */
-        $('#q_tools').hide();
-        /* In action=add non lo visualizza */
-        var action = $("input[name='action']").val();
-        if (action !== 'edit')
-            return;
-        var curr_stato = $("#id_stato_profilo").val();
-        if (parseInt(curr_stato) > 1)
-            $('#q_tools').show();
-        
-    }
-
 
 </script>

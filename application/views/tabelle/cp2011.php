@@ -25,7 +25,7 @@
     $(document).ready(function () {
         $('#dt_cp2011').DataTable({
             "language": {
-                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.lang"
+                "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
             },
             "processing": false, //Feature control the processing indicator.
             "serverSide": true, //Feature control DataTables' server-side processing mode.

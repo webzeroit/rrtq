@@ -5,7 +5,7 @@
                 <h4 class="card-title">Genera file di importazione per la piattaforma ATLANTE</h4>
                 <h6 class="card-subtitle">                    
                     L'obiettivo è quello di mantenere aggiornato e sincronizzato il Repertorio Regionale con la Banca dati nazionale (Atlante del Lavoro e delle Qualificazioni).
-                    La procedura consente di generare i file di importazione/aggiornamento nella piattaforma nazionale, le specifiche tecniche sul formato e sulle regole di trasferimento sono contenute nel documento <b><i>Procedura di importazione/aggiornamento delle qualificazioni regionali</i></b> disponibile sul sito <a href="http://atlantelavoro.inapp.org/" target="_blank">Atlante Lavoro INAPP</a>.
+                    La procedura consente di generare i file di importazione/aggiornamento nella piattaforma nazionale, le specifiche tecniche sul formato e sulle regole di trasferimento sono contenute nel documento <b><i>Procedura di importazione/aggiornamento delle qualificazioni regionali</i></b> disponibile nell'area riservata del sito <a href="http://atlantelavoro.inapp.org/" target="_blank">Atlante Lavoro INAPP</a>.
                 </h6>
                 <form class="m-t-40" id="frm_export_atlante" autocomplete="off" action="" method="post">
                     <div class="form-group row">
@@ -45,7 +45,7 @@
                                 }
                                 ?>
                             </select>  
-                            <small class="form-control-feedback">Sono escluse dalla lista le qualificazioni che si trovano nello stato <span class="text-warning">In Revisione</span> e <span class="text-danger">Non Pubblicato</span></small>
+                            <small class="form-control-feedback">Sono esportabili solo le qualificazioni che si trovano nello stato <span class="text-info">Pubblicato</span></small>
                         </div>
                     </div>  
                     <div class="text-xs-right">
