@@ -32,7 +32,8 @@ class GeneraPDF extends CI_Controller
         $profilo_live = $this->repertorio->select_profilo($id_profilo);
         /*  Verifico lo stato della qualificazione 
          *  Genera il PDF solo se lo stato è Pubblicato o In Revisione
-         * 1 = Pubblicato
+         * 0 = Pubblicato
+         * 1 = Revisioni Validate
          * 2 = In Revisione
          * 3 = Non Pubblicato
          * 4 = Cancellato              
@@ -41,8 +42,18 @@ class GeneraPDF extends CI_Controller
         $des_stato_profilo = "Pubblicato";
         switch ($stato_profilo)
         {
-            case 1:                
+            case 0:                
                 $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
+                break;
+            case 1:                
+                if ($live == 1) {
+                    $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
+                    $des_stato_profilo = "Revisioni Validate";
+                }
+                else
+                {
+                    $file_qualificazione = unserialize($profilo_live['file_qualificazione']);
+                }
                 break;
             case 2:
                 if ($live == 1) {
@@ -60,7 +71,9 @@ class GeneraPDF extends CI_Controller
                     $file_qualificazione = $this->repertorio->select_qualificazione($id_profilo);
                 }
                 else
+                {
                     show_404();
+                }
                 break;
             case 4:
             default:
@@ -68,7 +81,8 @@ class GeneraPDF extends CI_Controller
                 break;
         }
 
-
+        if (!is_array($file_qualificazione))
+            show_404();
         /*
          * Preparazione dati del profilo
          */
@@ -122,8 +136,9 @@ class GeneraPDF extends CI_Controller
 
         /* START PDF */
         $this->load->library('Pdf');
-        // crea il documento PDF
-        $pdf = new Pdf('P', 'mm', 'A4', false, 'UTF-8', false);
+        // crea il documento PDF        
+        //$pdf = new Pdf('P', 'mm', 'A4', false, 'UTF-8', false, false);
+        $pdf = new Pdf('P', 'mm', 'A4', false, 'ISO-8859-1', false, false);
         // imposta metadata documento
         $pdf->document_id = $document_id;
         $pdf->document_status = $des_stato_profilo;
@@ -250,6 +265,7 @@ class GeneraPDF extends CI_Controller
                         </td>
                     </tr>
                 </table>';
+            
             $pdf->writeHTML($tbl_competenze, true, false, false, false, '');
 
             //Spazio
