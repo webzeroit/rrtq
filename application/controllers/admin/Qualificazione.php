@@ -67,35 +67,15 @@ class Qualificazione extends MY_Controller_Admin
 
     public function difftool($id_profilo = NULL)
     {
+        $output = "";
         if ($id_profilo !== NULL)
         {
+
             $this->output->unset_template();
             $this->load->model('qualificazione_model');
-            $prima = $this->qualificazione_model->select_qualificazione_html($id_profilo, 0);
-            if (!isset($prima))
-            {
-                echo "<h1>Nessuna versione precedente disponibile al confronto</h1>";
-            }
-            else
-            {
-                $dopo = $this->qualificazione_model->select_qualificazione_html($id_profilo, 1);
-                $htmlDiff = new Caxy\HtmlDiff\HtmlDiff($prima, $dopo);
-                $htmlDiff->getConfig()
-                        ->setPurifierCacheLocation('application/cache/purifier/')
-                        ->setInsertSpaceInReplace(true)
-                        ->setGroupDiffs(true)
-                        ->setUseTableDiffing(true);
-
-                $content_extra = "
-            <style> 
-                ins {color: #333333;background-color: #41ff32; text-decoration: none;}
-                del {color: #AA3333;background-color: #ffeaea;text-decoration: line-through;}
-            </style>
-            <center><i>Diff-Check effettuato il " . date('d/m/Y H:i') . "<i></center><br><br>";
-                $content = $htmlDiff->build();
-                echo $content_extra . $content;
-            }
+            $output = $this->qualificazione_model->diffTool($id_profilo);
         }
+        echo $output;
     }
 
     /*
@@ -462,6 +442,10 @@ class Qualificazione extends MY_Controller_Admin
             if ($mode === "delete")
             {
                 $ret = $this->profilo_model->elimina_pubblicazione($this->input->post('id_profilo'));
+            }
+            if ($mode === "approve")
+            {
+                $ret = $this->profilo_model->approva_revisione($this->input->post('id_profilo'));
             }
             if ($ret === FALSE)
             {

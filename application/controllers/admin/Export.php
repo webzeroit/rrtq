@@ -39,7 +39,7 @@ class Export extends MY_Controller_Admin
             $this->load->model('sep_model');
             $this->load->model('profilo_model');
 
-            $profili_where = array('id_stato_profilo' => 1);
+            $profili_where = array('id_stato_profilo' => 0);
             $data = array(
                 'list_sep' => $this->sep_model->list_sep(),
                 'list_profili' => $this->profilo_model->list_profili($profili_where)
@@ -127,7 +127,7 @@ class Export extends MY_Controller_Admin
         if ($this->input->post('id_sep'))
         {
             $this->load->model('profilo_model');
-            $list_profili = $this->profilo_model->list_profili(array('id_sep' => $this->input->post('id_sep'), 'id_stato_profilo' => 1));
+            $list_profili = $this->profilo_model->list_profili(array('id_sep' => $this->input->post('id_sep'), 'id_stato_profilo' => 0));
         }
         foreach ($list_profili as $value)
         {

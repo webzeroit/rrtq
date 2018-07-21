@@ -83,12 +83,7 @@ class UnitaCompetenza extends MY_Controller_Admin
                 'field' => 'titolo_competenza',
                 'label' => 'Titolo Competenza',
                 'rules' => 'required|max_length[500]'
-            ),
-            array(
-                'field' => 'descrizione_competenza',
-                'label' => 'Descrizione Competenza',
-                'rules' => 'required|max_length[4000]'
-            ),
+            ),           
             array(
                 'field' => 'risultato_competenza',
                 'label' => 'Risultato Atteso',
@@ -132,7 +127,7 @@ class UnitaCompetenza extends MY_Controller_Admin
                 $mode = $this->input->post('action');
                 $data['competenza'] = array(
                     'titolo_competenza' => $this->input->post("titolo_competenza"),
-                    'descrizione_competenza' => $this->input->post("descrizione_competenza"),
+                    'descrizione_competenza' => $this->input->post("titolo_competenza"),
                     'risultato_competenza' => $this->input->post("risultato_competenza"),
                     'oggetto_di_osservazione' => $this->input->post("oggetto_di_osservazione"),
                     'indicatori' => $this->input->post("indicatori"),
@@ -157,6 +152,7 @@ class UnitaCompetenza extends MY_Controller_Admin
             else
             {
                 $output = array(
+                    'id_competenza' => $ret,
                     'esito' => 'success',
                     'message' => 'Salvataggio effettuato '
                 );
@@ -223,8 +219,10 @@ class UnitaCompetenza extends MY_Controller_Admin
         {
             exit('No direct script access allowed');
         }
-        $resp_usr = $this->config->item('role_responsabile');
-        if ($this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr))
+        if ($this->ion_auth->is_admin() || 
+            $this->ion_auth->in_group($this->config->item('role_responsabile')) ||
+            $this->ion_auth->in_group($this->config->item('role_supervisore'))
+        )
         {
             if ($this->input->post('id_competenza'))
             {

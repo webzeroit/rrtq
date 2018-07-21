@@ -104,6 +104,7 @@ class Abilita extends MY_Controller_Admin
             else
             {
                 $output = array(
+                    'id_abilita' => $ret,
                     'esito' => 'success',
                     'message' => 'Salvataggio effettuato '
                 );
@@ -139,9 +140,11 @@ class Abilita extends MY_Controller_Admin
         if (!$this->input->is_ajax_request())
         {
             exit('No direct script access allowed');
-        }
-        $resp_usr = $this->config->item('role_responsabile');
-        if ($this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr))
+        }        
+        if ($this->ion_auth->is_admin() || 
+            $this->ion_auth->in_group($this->config->item('role_responsabile')) ||
+            $this->ion_auth->in_group($this->config->item('role_supervisore'))
+        )
         {
             if ($this->input->post('id_abilita'))
             {
