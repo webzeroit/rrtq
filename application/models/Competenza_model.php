@@ -188,7 +188,7 @@ class Competenza_model extends MY_Model
         $this->load->helper('MY_datatable_helper');
 
         $this->datatables
-                ->select('id_competenza, titolo_competenza, descrizione_competenza, profili_associati')
+                ->select('id_competenza, titolo_competenza, risultato_competenza, livello_eqf, profili_associati')
                 ->from('v_rrtq_competenza');
 
         $this->datatables->add_column('azione', '$1', 'dt_uc_action(id_competenza,profili_associati)');
@@ -209,7 +209,12 @@ class Competenza_model extends MY_Model
                 ->select('des_stato_profilo')
                 ->join('rrtq_profilo_competenza', 'rrtq_profilo.id_profilo = rrtq_profilo_competenza.id_profilo')
                 ->where('id_competenza', $id_competenza);
-
+        /*
+        if (!$this->ion_auth->is_admin())
+        {
+            $this->datatables->where('rrtq_profilo.id_stato_profilo !=', 4);
+        }         
+         */
         $action_link = '<a href="' . base_url() . 'admin/qualificazione/gestione/$1" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
 
         $this->datatables->add_column('azione', $action_link, 'id_profilo');
@@ -240,6 +245,9 @@ class Competenza_model extends MY_Model
 
             $this->db->where('id_competenza', $id);
             $this->db->delete('rrtq_competenza_conoscenza');
+
+            $this->db->where('id_competenza', $id);
+            $this->db->delete('rrtq_competenza_cp2011');
 
             $this->db->where('id_competenza', $id);
             $this->db->delete('rrtq_competenza');

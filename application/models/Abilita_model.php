@@ -89,7 +89,7 @@ class Abilita_model extends MY_Model
         $this->load->library('datatables');
 
         $this->datatables
-                ->select('v_rrtq_competenza.id_competenza,titolo_competenza,descrizione_competenza,profili_associati')
+                ->select('v_rrtq_competenza.id_competenza,titolo_competenza,risultato_competenza,profili_associati')
                 ->from('v_rrtq_competenza')
                 ->join('rrtq_competenza_abilita', 'v_rrtq_competenza.id_competenza = rrtq_competenza_abilita.id_competenza')
                 ->where('id_abilita', $id_abilita);

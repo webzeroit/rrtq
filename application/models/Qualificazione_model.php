@@ -202,80 +202,151 @@ class Qualificazione_model extends MY_Model
      * Genera la qualificazione in HTML per lanciare il Diff Checker
      * il flag revisione indica se selezionare la qualificazione che 
      * è attualmente in modifica (1) oppure l'ultima pubblicata presente
-     * nella colonna serialized del DB (0)
+     * nella colonna serialized del DB (0)    
+     * Fine Tuning DiffTools
      */
-    public function select_qualificazione_html($id, $revisione = 0)
-    {
 
-        if ($revisione == 1)
+    public function diffTool($id)
+    {
+        /* SELEZIONA LE VERSIONI DA CONFRONTARE */
+        $prima = $this->select_qualificazione_serialized($id);
+        if (empty($prima))
         {
-            //Com'è adesso
-            $file_qualificazione = $this->select_qualificazione($id);
+            return "<h1>Nessuna versione precedente disponibile al confronto</h1>";;
         }
-        else
+        $dopo = $this->select_qualificazione($id);
+
+        
+        $htmlconDifferenze = "
+            <style> 
+                ins {color: #333333;background-color: #41ff32; text-decoration: none;}
+                del {color: #AA3333;background-color: #ffeaea;text-decoration: line-through;}
+            </style>
+            <center><i>Diff-Check effettuato il " . date('d/m/Y H:i') . "<i></center><br><br>";
+
+        $competenze_prima = $prima['profilo']['competenze'];
+        $competenze_dopo = $dopo['profilo']['competenze'];
+
+        unset($prima['profilo']['competenze']);
+        unset($dopo['profilo']['competenze']);
+
+        /* CREA I 2 HTML PROFILO */
+        $html_profilo_prima = $this->profiloToHTML($prima);
+        $html_profilo_dopo = $this->profiloToHTML($dopo);
+        
+        $htmlconDifferenze .= $this->diffHTML($html_profilo_prima, $html_profilo_dopo);
+        
+        
+        /* CONTIENE I 2 HTML COMPETENZE */
+        foreach ($competenze_prima as $key_prima => $competenza_prima)
         {
-            //Com'era prima
-            $file_qualificazione = $this->select_qualificazione_serialized($id);
+            $html_competenze_prima = "";
+            $html_competenze_dopo = "";
+            $trovata = false;
+            $id_competenza_prima = $competenza_prima["id_competenza"];
+
+            foreach ($competenze_dopo as $key_dopo => $competenza_dopo)
+            {
+                $id_competenza_dopo = $competenza_dopo["id_competenza"];
+
+                if ($id_competenza_prima == $id_competenza_dopo)
+                {
+                    $trovata = true;
+                    break;
+                }
+            }
+
+            if ($trovata)
+            {
+                /* CREA I 2 HTML COMPETENZE E LI CONTRONTA */
+                $html_competenze_prima = $this->competenzaToHTML($competenze_prima[$key_prima]);
+                $html_competenze_dopo = $this->competenzaToHTML($competenze_dopo[$key_dopo]);
+                $htmlconDifferenze .= $this->diffHTML($html_competenze_prima, $html_competenze_dopo);
+                unset($competenze_dopo[$key_dopo]);
+            }
+            else
+            {
+                $html_competenze_prima = $this->competenzaToHTML($competenze_prima[$key_prima]);
+                $htmlconDifferenze .= $this->diffHTML($html_competenze_prima, NULL);                
+            }
+        }
+        if (count($competenze_dopo) > 0)
+        {
+            foreach ($competenze_dopo as $new_competenze)
+            {
+                $html_competenze_dopo = $this->competenzaToHTML($new_competenze);
+                $htmlconDifferenze .= $this->diffHTML(NULL, $html_competenze_dopo); 
+            }
+        }
+     
+        return $htmlconDifferenze;
+    }
+
+    private function diffHTML($prima, $dopo)
+    {
+        $htmlDiff = new Caxy\HtmlDiff\HtmlDiff($prima, $dopo);
+        $htmlDiff->getConfig()
+                ->setPurifierCacheLocation('application/cache/purifier/')
+                ->setInsertSpaceInReplace(true)
+                ->setGroupDiffs(true)
+                ->setUseTableDiffing(true);
+
+        return $htmlDiff->build();
+    }
+
+    private function profiloToHTML($file_qualificazione)
+    {
+        $profilo = $file_qualificazione['profilo'];
+
+        $profilo_processo = $file_qualificazione["profilo"]["processo"];
+        $str_profilo_processo = "";
+        if (!empty($profilo_processo))
+        {
+            foreach ($profilo_processo as $item)
+            {
+                $str_profilo_processo .= $item['descrizione_processo'] . "<br/>";
+            }
+        }
+        //SEQUENZA DI PROCESSO
+        $profilo_seq_processo = $file_qualificazione["profilo"]["seq_processo"];
+        $str_profilo_seq_processo = "";
+        if (!empty($profilo_seq_processo))
+        {
+            foreach ($profilo_seq_processo as $item)
+            {
+                $str_profilo_seq_processo .= $item['descrizione_sequenza'] . "<br/>";
+            }
+        }
+        // ADA
+        $profilo_ada = $file_qualificazione["profilo"]["ada"];
+        $str_profilo_ada = "";
+        if (!empty($profilo_ada))
+        {
+            foreach ($profilo_ada as $item)
+            {
+                $str_profilo_ada .= $item['codice_ada'] . " - " . $item['descrizione_ada'] . "<br/>";
+            }
+        }
+        // CP 2011
+        $profilo_cp2011 = $file_qualificazione["profilo"]["cp2011"];
+        $str_profilo_cp2011 = "";
+        foreach ($profilo_cp2011 as $item)
+        {
+            $str_profilo_cp2011 .= $item['codice_cp2011'] . " - " . $item['descrizione_cp2011'] . "<br/>";
+        }
+        //ATECO 2007
+        $profilo_ateco2007 = $file_qualificazione["profilo"]["ateco2007"];
+        $str_profilo_ateco2007 = "";
+        foreach ($profilo_ateco2007 as $item)
+        {
+            $str_profilo_ateco2007 .= $item['codice_ateco'] . " - " . $item['descrizione_ateco'] . "<br/>";
         }
         /*
-         * Verifica se per un qualsiasi motivo la qualificazione, 
-         * principalmente quella serializzata, non è disponibile
+         * Fine estrazione dati del profilo
+         * Inizio la composizione dell'HTML
          */
-        if (!empty($file_qualificazione))
-        {
-            $profilo = $file_qualificazione['profilo'];
-
-            $profilo_processo = $file_qualificazione["profilo"]["processo"];
-            $str_profilo_processo = "";
-            if (!empty($profilo_processo))
-            {
-                foreach ($profilo_processo as $item)
-                {
-                    $str_profilo_processo .= $item['descrizione_processo'] . "<br/>";
-                }
-            }
-            //SEQUENZA DI PROCESSO
-            $profilo_seq_processo = $file_qualificazione["profilo"]["seq_processo"];
-            $str_profilo_seq_processo = "";
-            if (!empty($profilo_seq_processo))
-            {
-                foreach ($profilo_seq_processo as $item)
-                {
-                    $str_profilo_seq_processo .= $item['descrizione_sequenza'] . "<br/>";
-                }
-            }
-            // ADA
-            $profilo_ada = $file_qualificazione["profilo"]["ada"];
-            $str_profilo_ada = "";
-            if (!empty($profilo_ada))
-            {
-                foreach ($profilo_ada as $item)
-                {
-                    $str_profilo_ada .= $item['codice_ada'] . " - " . $item['descrizione_ada'] . "<br/>";
-                }
-            }
-            // CP 2011
-            $profilo_cp2011 = $file_qualificazione["profilo"]["cp2011"];
-            $str_profilo_cp2011 = "";
-            foreach ($profilo_cp2011 as $item)
-            {
-                $str_profilo_cp2011 .= $item['codice_cp2011'] . " - " . $item['descrizione_cp2011'] . "<br/>";
-            }
-            //ATECO 2007
-            $profilo_ateco2007 = $file_qualificazione["profilo"]["ateco2007"];
-            $str_profilo_ateco2007 = "";
-            foreach ($profilo_ateco2007 as $item)
-            {
-                $str_profilo_ateco2007 .= $item['codice_ateco'] . " - " . $item['descrizione_ateco'] . "<br/>";
-            }
-
-            $profilo_competenza = $file_qualificazione["profilo"]["competenze"];
-            /*
-             * Fine estrazione dati del profilo
-             * Inizio la composizione dell'HTML
-             */
-            $html = "";
-            $html .= '
+        $html = "";
+        $html .= '
             <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
                 <tr style="background-color:#D9D9D9;">
                     <td colspan="2" align="center" width="510" height="40"><b>SETTORE ECONOMICO PROFESSIONALE<br/><br/><i>' . $profilo['descrizione_sep'] . '</i></b></td>
@@ -319,30 +390,29 @@ class Qualificazione_model extends MY_Model
                 </tr>                                 
             </table>
             <br/><br/>';
+        return $html;
+    }
 
-            $prog_competenza = 1;
-            $num_competenze = count($profilo_competenza);
+    private function competenzaToHTML($competenza)
+    {
+        $html = "";
+        $competenza_abilita = $competenza['abilita'];
+        $str_abilita = "";
+        foreach ($competenza_abilita as $item)
+        {
+            $str_abilita .= "<li>" . $item['descrizione_abilita'] . "</li>";
+        }
+        $competenza_conoscenza = $competenza['conoscenza'];
+        $str_conoscenze = "";
+        foreach ($competenza_conoscenza as $item)
+        {
+            $str_conoscenze .= "<li>" . $item['descrizione_conoscenza'] . "</li>";
+        }
 
-            foreach ($profilo_competenza as $competenza)
-            {
-
-                $competenza_abilita = $competenza['abilita'];
-                $str_abilita = "";
-                foreach ($competenza_abilita as $item)
-                {
-                    $str_abilita .= "<li>" . $item['descrizione_abilita'] . "</li>";
-                }
-                $competenza_conoscenza = $competenza['conoscenza'];
-                $str_conoscenze = "";
-                foreach ($competenza_conoscenza as $item)
-                {
-                    $str_conoscenze .= "<li>" . $item['descrizione_conoscenza'] . "</li>";
-                }
-
-                $html .= '
+        $html .= '
                 <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
                     <tr style="background-color:#D9D9D9;">
-                        <td colspan="2" align="center" width="100%"><b>COMPETENZA N. ' . $prog_competenza . ' - Titolo</b><br/>' . $competenza['titolo_competenza'] . '</td>
+                        <td colspan="2" align="center" width="100%"><b>COMPETENZA - Titolo</b><br/>' . $competenza['titolo_competenza'] . '</td>
                     </tr>    
                     <tr style="background-color:#D9D9D9;">
                         <td colspan="2" align="center"><b>Risultato atteso</b><br/>' . $competenza['risultato_competenza'] . '</td>
@@ -366,8 +436,8 @@ class Qualificazione_model extends MY_Model
                 </table>';
 
 
-                $html .= '<br/><p><b>Indicazioni per la valutazione delle competenze</b></p>
-                <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
+        $html .= '<br/><p><b>Indicazioni per la valutazione delle competenze</b></p>
+                  <table border="1" cellpadding="4" style="border-collapse: collapse;" width="100%">
                     <tr style="background-color:#D9D9D9;">
                         <td align="center" width="33%"><b>Titolo competenza e Risultato atteso</b></td>
                         <td align="center" width="33%"><b>Oggetto di osservazione</b></td>
@@ -378,17 +448,11 @@ class Qualificazione_model extends MY_Model
                         <td>' . $competenza['oggetto_di_osservazione'] . '</td>
                         <td>' . $competenza['indicatori'] . '</td>
                     </tr>
-                </table>';
+                </table>
+                <br/><br/><br/>';
 
-                $prog_competenza++;
-                if ($prog_competenza <= $num_competenze)
-                {
-                    $html .= "<br/><br/><br/><br/><br/>";
-                }
-            }
-            
-            return $html;
-        }
+
+        return $html;
     }
 
 }

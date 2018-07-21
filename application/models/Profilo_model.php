@@ -55,11 +55,11 @@ class Profilo_model extends MY_Model
                 ->select('id_profilo,rrtq_profilo_competenza.id_competenza')
                 ->from('rrtq_profilo_competenza')
                 ->join('rrtq_competenza', 'rrtq_profilo_competenza.id_competenza = rrtq_competenza.id_competenza')
-                ->select('titolo_competenza,descrizione_competenza,risultato_competenza,oggetto_di_osservazione,indicatori')
+                ->select('titolo_competenza,descrizione_competenza,risultato_competenza,oggetto_di_osservazione,indicatori,livello_eqf')
                 ->where('id_profilo', $id_profilo);
 
         $action_link = '<a href="' . base_url() . 'admin/unitacompetenza/gestione/$1" data-toggle="tooltip" data-original-title="Modifica"> <i class="fa fa-eye text-inverse m-r-5"></i> </a>';
-        $action_link .= '<a href="javascript:del_competenza($1);" target="_blank" data-toggle="tooltip" data-original-title="Dissocia"><i class="fa fa-chain-broken text-danger m-r-5"></i></a>';
+        $action_link .= '<a href="javascript:del_competenza($1);" data-toggle="tooltip" data-original-title="Dissocia"><i class="fa fa-chain-broken text-danger m-r-5"></i></a>';
 
         $this->datatables->add_column('azione', $action_link, 'id_competenza');
 
@@ -85,7 +85,10 @@ class Profilo_model extends MY_Model
             $this->db->trans_start();
 
             $this->db->set('id_profilo', $id_profilo);
-            $this->db->set('id_stato_profilo', 3);
+            /*
+             * 2018-07-16 In inserimento per default il profilo è impostato a In Revisione
+             */
+            $this->db->set('id_stato_profilo', 2);
             $this->db->set($data['profilo']);
             $this->db->insert('rrtq_profilo');
 
@@ -145,14 +148,19 @@ class Profilo_model extends MY_Model
 
             //AVVIO TRANSAZIONE
             $this->db->trans_start();
-
-            if ($curr_stato_profilo === 1)
+            
+            /* NEL CASO IN CUI LO STATO PASSA DA PUBBLICATA (0) AD ALTRO SERIALIZZO IL CONTENUTO */
+            if ($curr_stato_profilo === 0)
             {
                 $this->db->set('id_stato_profilo', 2);
-                /* NEL CASO IN CUI LO STATO PASSASSE DA PUBBLICATA AD ALTRO SERIALIZZO IL CONTENUTO */
                 $this->load->model('qualificazione_model');
                 $file_qualificazione = $this->qualificazione_model->select_qualificazione($id_profilo);
                 $this->db->set('file_qualificazione', serialize($file_qualificazione));
+            }
+            /* NEL CASO IN CUI LA REVISIONE FOSSE STATA APPROVATA, RIMETTE LO STATO IN REVISIONE */
+            if ($curr_stato_profilo === 1)
+            {
+                $this->db->set('id_stato_profilo', 2);
             }
             $this->db->set($data['profilo']);
             $this->db->where('id_profilo', $id_profilo);
@@ -242,10 +250,10 @@ class Profilo_model extends MY_Model
 
         return TRUE;
     }
-
+    
     public function avvia_pubblicazione($id)
     {
-        $this->db->set('id_stato_profilo', 1);
+        $this->db->set('id_stato_profilo', 0);
         $this->db->set('file_qualificazione', NULL);
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
@@ -262,8 +270,7 @@ class Profilo_model extends MY_Model
 
     public function sospendi_pubblicazione($id)
     {
-        $this->db->set('id_stato_profilo', 3);
-        $this->db->set('file_qualificazione', NULL);
+        $this->db->set('id_stato_profilo', 3);        
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
@@ -276,7 +283,7 @@ class Profilo_model extends MY_Model
         /* END LOG */
         return TRUE;
     }
-
+    
     public function elimina_pubblicazione($id)
     {
         $this->db->set('id_stato_profilo', 4);
@@ -293,6 +300,26 @@ class Profilo_model extends MY_Model
         return TRUE;
     }
 
+    public function approva_revisione($id)
+    {
+        $this->db->set('id_stato_profilo', 1);        
+        $this->db->where('id_profilo', $id);
+        $this->db->update('rrtq_profilo');
+        $db_error = $this->db->error();
+        if (!$db_error["code"] === 0)
+        {
+            return FALSE;
+        }
+        /* LOG ACTIVITY */
+        $this->activity->log('revision_ok', array('id' => $id, 'table' => 'Qualificazione'));
+        /* END LOG */
+        return TRUE;
+    }    
+    
+    /* 
+     * Considerare la questione relativa allo stato NON PUBBLICATO 
+     * se deve passare in revisione o non va modificato 
+     */
     public function setta_revisione_profili($ids)
     {
         // crea un array se solo un ID è stato passato
@@ -307,8 +334,8 @@ class Profilo_model extends MY_Model
                     ->where('id_profilo', $id_profilo);
             $query = $this->db->get();
             $row = $query->row(0)->id_stato_profilo;
-
-            if ((int) $row === 1)
+            
+            if ((int) $row < 2)
             {
                 $this->db->set('id_stato_profilo', 2);
                 // NEL CASO IN CUI LO STATO PASSASSE DA PUBBLICATA AD ALTRO SERIALIZZO IL CONTENUTO 

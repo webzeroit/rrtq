@@ -89,7 +89,7 @@ class Conoscenza_model extends MY_Model
         
         
         $this->datatables
-                ->select('v_rrtq_competenza.id_competenza,titolo_competenza,descrizione_competenza,profili_associati')
+                ->select('v_rrtq_competenza.id_competenza,titolo_competenza,risultato_competenza,profili_associati')
                 ->from('v_rrtq_competenza')
                 ->join('rrtq_competenza_conoscenza', 'v_rrtq_competenza.id_competenza = rrtq_competenza_conoscenza.id_competenza')
                 ->where('id_conoscenza', $id_conoscenza);

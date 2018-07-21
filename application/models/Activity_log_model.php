@@ -58,6 +58,10 @@ class Activity_log_model extends CI_Model
                 $username = $this->ion_auth->user()->row()->username;
                 $msg = "{$username} ha inserito in revisione id {$arr['id']} dalla tabella {$arr['table']}";
                 break;
+            case 'revision_ok':
+                $username = $this->ion_auth->user()->row()->username;
+                $msg = "{$username} ha approvato le revisioni id {$arr['id']} dalla tabella {$arr['table']}";
+                break;            
         }
         $data = array(
             'action' => $action,
