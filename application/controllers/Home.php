@@ -21,8 +21,10 @@ class Home extends MY_Controller_Admin
 
     public function index()
     {
-        $resp_usr = $this->config->item('role_responsabile');
-        if ($this->ion_auth->is_admin() || $this->ion_auth->in_group($resp_usr))
+        if ($this->ion_auth->is_admin() || 
+            $this->ion_auth->in_group($this->config->item('role_responsabile')) ||
+            $this->ion_auth->in_group($this->config->item('role_supervisore'))
+           )
         {
 
 
