@@ -8,6 +8,10 @@ class Profilo_model extends MY_Model
     public function __construct()
     {
         parent::__construct();
+        /*
+         * MESSAGGISTICA                
+         */
+        $this->load->library('messaggistica');
     }
 
     public function datatables_profili()
@@ -136,6 +140,12 @@ class Profilo_model extends MY_Model
                     'extra_info' => 'con titolo ' . $data['profilo']['titolo_profilo']
                 ));
                 /* END LOG */
+                /* MESSAGES NOTIFICATION SYSTEM */
+                if ($this->config->item('enable_messages'))
+                {
+                    $this->messaggistica->invia_messaggio('save_profilo', $data['profilo']['titolo_profilo']);
+                }
+                /* END MESSAGES */
                 return $id_profilo;
             }
         }
@@ -148,7 +158,7 @@ class Profilo_model extends MY_Model
 
             //AVVIO TRANSAZIONE
             $this->db->trans_start();
-            
+
             /* NEL CASO IN CUI LO STATO PASSA DA PUBBLICATA (0) AD ALTRO SERIALIZZO IL CONTENUTO */
             if ($curr_stato_profilo === 0)
             {
@@ -217,6 +227,17 @@ class Profilo_model extends MY_Model
                     'extra_info' => 'con titolo ' . $data['profilo']['titolo_profilo']
                 ));
                 /* END LOG */
+                //SE PASSA IN REVISIONE DA PUBBLICATO O REVISIONE APPROVATA INVIA MESSAGGIO
+                if ($curr_stato_profilo < 2)
+                {
+                    /* MESSAGES NOTIFICATION SYSTEM */
+                    if ($this->config->item('enable_messages'))
+                    {
+                        $this->messaggistica->invia_messaggio('setta_revisione_profili', $data['profilo']['titolo_profilo']);
+                    }
+                    /* END MESSAGES */
+                }
+
                 return $id_profilo;
             }
         }
@@ -250,7 +271,7 @@ class Profilo_model extends MY_Model
 
         return TRUE;
     }
-    
+
     public function avvia_pubblicazione($id)
     {
         $this->db->set('id_stato_profilo', 0);
@@ -265,12 +286,18 @@ class Profilo_model extends MY_Model
         /* LOG ACTIVITY */
         $this->activity->log('publish', array('id' => $id, 'table' => 'Qualificazione'));
         /* END LOG */
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            $this->messaggistica->invia_messaggio('avvia_pubblicazione', $this->get_titoli_profilo($id));
+        }
+        /* END MESSAGES */
         return TRUE;
     }
 
     public function sospendi_pubblicazione($id)
     {
-        $this->db->set('id_stato_profilo', 3);        
+        $this->db->set('id_stato_profilo', 3);
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
@@ -281,9 +308,15 @@ class Profilo_model extends MY_Model
         /* LOG ACTIVITY */
         $this->activity->log('unpublish', array('id' => $id, 'table' => 'Qualificazione'));
         /* END LOG */
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            $this->messaggistica->invia_messaggio('sospendi_pubblicazione', $this->get_titoli_profilo($id));
+        }
+        /* END MESSAGES */
         return TRUE;
     }
-    
+
     public function elimina_pubblicazione($id)
     {
         $this->db->set('id_stato_profilo', 4);
@@ -297,12 +330,18 @@ class Profilo_model extends MY_Model
         /* LOG ACTIVITY */
         $this->activity->log('delete', array('id' => $id, 'table' => 'Qualificazione'));
         /* END LOG */
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            $this->messaggistica->invia_messaggio('elimina_pubblicazione', $this->get_titoli_profilo($id));
+        }
+        /* END MESSAGES */
         return TRUE;
     }
 
     public function approva_revisione($id)
     {
-        $this->db->set('id_stato_profilo', 1);        
+        $this->db->set('id_stato_profilo', 1);
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
@@ -313,15 +352,24 @@ class Profilo_model extends MY_Model
         /* LOG ACTIVITY */
         $this->activity->log('revision_ok', array('id' => $id, 'table' => 'Qualificazione'));
         /* END LOG */
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            $this->messaggistica->invia_messaggio('approva_revisione', $this->get_titoli_profilo($id));
+        }
+        /* END MESSAGES */
         return TRUE;
-    }    
-    
-    /* 
+    }
+
+    /*
      * Considerare la questione relativa allo stato NON PUBBLICATO 
      * se deve passare in revisione o non va modificato 
      */
+
     public function setta_revisione_profili($ids)
     {
+        //contiene gli ID che passano per la prima volta in revisione
+        $id_da_notificare = array();
         // crea un array se solo un ID è stato passato
         if (!is_array($ids))
         {
@@ -334,7 +382,7 @@ class Profilo_model extends MY_Model
                     ->where('id_profilo', $id_profilo);
             $query = $this->db->get();
             $row = $query->row(0)->id_stato_profilo;
-            
+
             if ((int) $row < 2)
             {
                 $this->db->set('id_stato_profilo', 2);
@@ -344,13 +392,25 @@ class Profilo_model extends MY_Model
                 $this->db->set('file_qualificazione', serialize($file_qualificazione));
                 $this->db->where('id_profilo', $id_profilo);
                 $this->db->update('rrtq_profilo');
+                $id_da_notificare[] = $id_profilo;
             }
         }
-        /* LOG ACTIVITY */
+
         if (count($ids) > 0)
         {
+            /* LOG ACTIVITY */
             $this->activity->log('revision', array('id' => implode(",", $ids), 'table' => 'Qualificazione'));
-        }/* END LOG */
+            /* END LOG */
+        }
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            if (count($id_da_notificare) > 0)
+            {
+                $this->messaggistica->invia_messaggio('setta_revisione_profili', $this->get_titoli_profilo($id_da_notificare));
+            }
+        }
+        /* END MESSAGES */
     }
 
     public function select_stato_profilo($id)
@@ -371,6 +431,32 @@ class Profilo_model extends MY_Model
             $maxid = $row->maxid;
         }
         return $maxid;
+    }
+
+    /* OTTIENE LE DENOMINAZIONI DEI PROFILI PER LOG ED EMAIL */
+
+    private function get_titoli_profilo($ids)
+    {
+        // crea un array se solo un ID è stato passato
+        if (!is_array($ids))
+        {
+            $ids = array($ids);
+        }
+        $this->db->select('titolo_profilo');
+        $this->db->from('rrtq_profilo');
+        $this->db->where_in('id_profilo', $ids);
+
+        $query = $this->db->get();
+        $titoli = $query->result_array();
+        $titoli_str = "";
+        foreach ($query->result_array() as $titolo)
+        {
+
+            $titoli_str .= $titolo["titolo_profilo"] . "<br/>";
+        }
+
+
+        return $titoli_str;
     }
 
 }

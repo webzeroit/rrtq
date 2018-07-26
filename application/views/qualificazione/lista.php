@@ -268,7 +268,7 @@
             if (isConfirm) {
                 //PROSEGUI		
                 var id_profilo = id;
-                var action = "stop";
+                var action = "start";
                 $.ajax({
                     type: 'POST',
                     url: baseURL + 'admin/qualificazione/edita_pubblicazione_json',

@@ -69,16 +69,64 @@ class Utenti extends MY_Controller_Admin
 
         $this->load->view('auth/gestione_utente', $this->data);
     }
-    
-    
+
     public function edit_profilo()
     {
         $this->output->set_title("Impostazioni profilo");
         $this->load->view('auth/edit_profilo');
     }
 
+    /*
+     * SEZIONE MESSAGGI
+     */
+
+    public function messages()
+    {
+        if (!$this->config->item('enable_messages')) // remove this elseif if you want to enable this for non-admins
+        {
+            // redirect them to the home page because they must be an administrator to view this
+            return show_error('Modulo messaggi non abilitato.');
+        }
+        
+        $this->output->set_title("Centro messaggi");
+        $this->load->view('auth/messages');
+    }
+
+    public function get_datatables_in_arrivo_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $this->load->model('Messaggistica_model', 'messages');
+        $output = $this->messages->datatables_in_arrivo();
+        $this->_render_text($output);
+    }
+
+    public function segna_come_letto()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $this->load->model('Messaggistica_model', 'messages');
+        if ($this->input->post('id_message'))
+        {
+            $output = $this->messages->segna_come_letto($this->input->post('id_message'));
+        }
+        else
+        {
+            $output = $this->messages->segna_come_letto();
+        }
+        $this->_render_json($output);
+    }
+
+    /*
+     * FINE SEZIONE MESSAGGI
+     */
+
     /* AJAX Call */
-    
+
     public function save_utente()
     {
         $tables = $this->config->item('tables', 'ion_auth');
@@ -221,14 +269,14 @@ class Utenti extends MY_Controller_Admin
     public function deactivate($id = NULL)
     {
         if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
-        {            
-             // redirect them to the home page because they must be an administrator to view this
+        {
+            // redirect them to the home page because they must be an administrator to view this
             return show_error('Non hai i privilegi per visualizzare questa pagina.');
         }
 
         $id = (int) $id;
         $deactivation = $this->ion_auth->deactivate($id);
-         if ($deactivation)
+        if ($deactivation)
         {
             $output = array(
                 'esito' => 'success',
@@ -243,21 +291,21 @@ class Utenti extends MY_Controller_Admin
             );
         }
         $this->_render_json($output);
-    }    
-    
+    }
+
     public function save_profilo()
     {
-        
+
         if (!$this->ion_auth->logged_in())
         {
             redirect('/', 'refresh');
         }
-        
+
         $tables = $this->config->item('tables', 'ion_auth');
         $current_user = $this->ion_auth->user()->row_array();
         $user_id = $current_user['id'];
         $current_email = $current_user['email'];
-        
+
         if ($this->input->post('email') != $current_email)
         {
             $is_unique = '|is_unique[' . $tables['users'] . '.email]';
@@ -267,18 +315,18 @@ class Utenti extends MY_Controller_Admin
             $is_unique = '';
         }
         $FormRules = array
-        (
+            (
             array('field' => 'first_name', 'label' => 'Nome', 'rules' => 'trim|required',),
             array('field' => 'last_name', 'label' => 'Cognome', 'rules' => 'trim|required',),
             array('field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email' . $is_unique),
-            array('field' => 'phone', 'label' => 'Telefono', 'rules' => 'trim|numeric|max_length[20]')            
+            array('field' => 'phone', 'label' => 'Telefono', 'rules' => 'trim|numeric|max_length[20]')
         );
-        
+
         $this->form_validation->set_rules($FormRules);
 
         if ($this->form_validation->run() === TRUE)
         {
-           
+
             //MODIFICA UTENTE
             $email = strtolower($this->input->post('email'));
             $data = array(
@@ -290,7 +338,7 @@ class Utenti extends MY_Controller_Admin
             );
             //AGGIORNAMENTO GRUPPI                 
             $ret = $this->ion_auth->update($user_id, $data);
-            
+
 
             if ($ret === FALSE)
             {
@@ -319,7 +367,6 @@ class Utenti extends MY_Controller_Admin
         }
     }
 
-    
     public function change_password()
     {
         $this->form_validation->set_rules('old', $this->lang->line('change_password_validation_old_password_label'), 'required');
@@ -333,7 +380,7 @@ class Utenti extends MY_Controller_Admin
 
         if ($this->form_validation->run() === TRUE)
         {
-           
+
             $identity = $this->session->userdata('identity');
 
             $change = $this->ion_auth->change_password($identity, $this->input->post('old'), $this->input->post('new'));
@@ -348,10 +395,10 @@ class Utenti extends MY_Controller_Admin
             }
             else
             {
-                 $output = array(
+                $output = array(
                     'esito' => 'error',
                     'message' => $this->ion_auth->errors()
-                );                               
+                );
             }
             $this->_render_json($output);
         }
@@ -364,4 +411,5 @@ class Utenti extends MY_Controller_Admin
             $this->_render_json($output);
         }
     }
+
 }

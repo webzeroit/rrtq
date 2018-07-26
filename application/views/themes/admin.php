@@ -126,7 +126,62 @@
                             <!-- ============================================================== -->
                             <!-- Messages -->
                             <!-- ============================================================== -->
-
+                            <?php if ($this->config->item('enable_messages')) {
+                                    $interval = $this->config->item('polling_messages');
+                                
+                            ?>
+                            <script type='text/javascript'>
+                                function verifica_posta()
+                                {
+                                    $.getJSON(baseURL + "home/verifica_posta" ,  function( data ) {
+                                        if (data.length > 0){
+                                            //console.log("HAI MESSAGGI");
+                                            $(".notify").show();
+                                            $(".drop-title").html("Hai " + data.length + " nuovi messaggi");
+                                            $(".message-center").show();
+                                            var elementi = [];
+                                            $.each( data, function( key ) {
+                                                elementi.push("<a href='"+ baseURL + "admin/utenti/messages" + "'><div class='user-img'><i class='fa fa-envelope-o'></i></div><div class='mail-contnet'><h5>" + 
+                                                        data[key].subject + 
+                                                        "</h5> <span class='mail-desc'>" + 
+                                                        data[key].message.replace(/<(?:.|\n)*?>/gm, '') + 
+                                                        "...</span> <span class='time'>"+  data[key].date  + "</span> </div></a>");
+                                                if (key === 3)  return false;
+                                            });
+                                            $(".message-center").html(elementi.join(""));
+                                            
+                                        } else {
+                                            //console.log("NON HAI MESSAGGI");
+                                            $(".notify").hide();
+                                            $(".drop-title").html("Non hai nuovi messaggi");
+                                            $(".message-center").hide();
+                                        }
+                                    });
+                                }
+                                verifica_posta();
+                                setInterval(verifica_posta, <?php echo $interval; ?>);
+                            </script>    
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-email"></i>
+                                    <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                                </a>
+                                <div class="dropdown-menu mailbox animated slideInUp" aria-labelledby="2">
+                                    <ul>
+                                        <li>
+                                            <div class="drop-title"></div>
+                                        </li>
+                                        <li>
+                                            <div class="message-center">
+                                             
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <a class="nav-link text-center" href="<?php echo base_url('admin/utenti/messages') ?>"> <strong>Vedi tutti i messaggi</strong> <i class="fa fa-angle-right"></i> </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>    
+                            <?php } ?>
                             <!-- ============================================================== -->
                             <!-- End Messages -->
                             <!-- ============================================================== -->
@@ -157,6 +212,10 @@
                                         <li role="separator" class="divider"></li>
                                         <li><a href="<?php echo base_url('admin/utenti/edit_profilo') ?>"><i class="ti-user"></i> Il mio profilo</a></li>    
                                         <li><a href="<?php echo base_url('admin/utenti/edit_profilo') ?>"><i class="fa fa-key"></i> Cambia password</a></li>
+                                        <?php if ($this->config->item('enable_messages')) { ?>
+                                            <li><a href="<?php echo base_url('admin/utenti/messages') ?>"><i class="ti-email"></i> Messaggi</a></li>
+                                        <?php } ?>
+                                        <li role="separator" class="divider"></li>
                                         <li><a href="<?php echo base_url('auth/logout') ?>"><i class="fa fa-power-off"></i> Logout</a></li>
                                     </ul>
                                 </div>

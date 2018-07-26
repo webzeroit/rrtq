@@ -15,6 +15,7 @@ class MY_Controller_Admin extends CI_Controller
             // redirect them to the login page
             redirect('auth/login', 'refresh');
         }
+        $this->load->library('messaggistica');
         $this->load->section('menu', 'section/menu');
     }
     
@@ -45,5 +46,17 @@ class MY_Controller_Admin extends CI_Controller
                 ->set_content_type('text/plain')
                 ->set_output($text);
     }
+    
+    public function verifica_posta()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $output = $this->messaggistica->non_letti();
+        $this->_render_json($output);
+    }
+    
+    
 
 }
