@@ -538,6 +538,16 @@ $(document).ready(function () {
         $(".select2-multiple").select2(std_options_multi);
     }
 
+    /* Rimuove line break da text area*/
+    $('textarea').blur(function() {
+        if ($(this).val() !== ""){
+            var testo_sporco = $(this).val();
+            var testo_pulito = testo_sporco.replace(/(\r\n|\n|\r)/gm," ")                                           
+                                           .replace(/\s+/g," ");
+            $(this).val(testo_pulito);
+        }
+    });
+
     /* Visualizza dettaglio UC contestualmente */
     $("#btn_dettaglio_uc").click( function (e) {
         e.preventDefault();                  
