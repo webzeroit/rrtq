@@ -262,6 +262,15 @@
             });
         }
 
+        /* Rimuove line break da text area*/
+        $('textarea').blur(function() {
+            if ($(this).val() !== ""){
+                var testo_sporco = $(this).val();
+                var testo_pulito = testo_sporco.replace(/(\r\n|\n|\r)/gm," ")                                           
+                                               .replace(/\s+/g," ");
+                $(this).val(testo_pulito);
+            }
+        });
 
         var id_competenza = $("input[name='id_competenza']").val();
         var action = $("input[name='action']").val();
