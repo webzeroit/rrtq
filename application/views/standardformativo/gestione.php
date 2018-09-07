@@ -539,7 +539,8 @@ $(document).ready(function () {
     }
 
     /* Rimuove line break da text area*/
-    $('textarea').blur(function() {
+    $('textarea').blur(function() 
+    {
         if ($(this).val() !== ""){
             var testo_sporco = $(this).val();
             var testo_pulito = testo_sporco.replace(/(\r\n|\n|\r)/gm," ")                                           
