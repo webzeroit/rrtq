@@ -216,7 +216,7 @@ class Utenti extends MY_Controller_Admin
             {
                 $output = array(
                     'esito' => 'error',
-                    'message' => 'errori in inserimento'
+                    'message' => 'Si sono verificati degli errori in fase di inserimento'
                 );
             }
             else
@@ -344,7 +344,7 @@ class Utenti extends MY_Controller_Admin
             {
                 $output = array(
                     'esito' => 'error',
-                    'message' => 'errori in inserimento'
+                    'message' => 'Si sono verificati degli errori in fase di inserimento'
                 );
             }
             else

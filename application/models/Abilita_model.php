@@ -12,10 +12,8 @@ class Abilita_model extends MY_Model
 
     public function list_abilita()
     {
-        $this->db->cache_on();
         $this->db->from('rrtq_abilita');
         $query = $this->db->get();
-        $this->db->cache_off();
         return $query->result_array();
     }
 
@@ -54,11 +52,10 @@ class Abilita_model extends MY_Model
             $this->db->update('rrtq_abilita', $data['abilita']);
         }
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
-        $this->db->cache_delete_all();
         /* LOG ACTIVITY */
         $activity_op = ($id === "" ? "add" : "edit");
         $this->activity->log($activity_op, array('id' => $id_abilita, 'table' => 'Abilità'));
@@ -127,7 +124,6 @@ class Abilita_model extends MY_Model
             else
             {
                 /* LOG ACTIVITY */
-                $this->db->cache_delete_all();
                 $this->activity->log("delete", array(
                     'id' => $id,
                     'table' => 'Abilità',

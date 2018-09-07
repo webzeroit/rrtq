@@ -133,9 +133,8 @@
                             <script type='text/javascript'>
                                 function verifica_posta()
                                 {
-                                    $.getJSON(baseURL + "home/verifica_posta" ,  function( data ) {
+                                    $.getJSON(baseURL + "admin/dashboard/verifica_posta" ,  function( data ) {
                                         if (data.length > 0){
-                                            //console.log("HAI MESSAGGI");
                                             $(".notify").show();
                                             $(".drop-title").html("Hai " + data.length + " nuovi messaggi");
                                             $(".message-center").show();
@@ -151,7 +150,6 @@
                                             $(".message-center").html(elementi.join(""));
                                             
                                         } else {
-                                            //console.log("NON HAI MESSAGGI");
                                             $(".notify").hide();
                                             $(".drop-title").html("Non hai nuovi messaggi");
                                             $(".message-center").hide();

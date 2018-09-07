@@ -12,11 +12,9 @@ class Cp2011_model extends MY_Model
 
     public function list_cp2011()
     {
-        $this->db->cache_on();
         $this->db->select('codice_cp2011,CONCAT(codice_cp2011," - ", descrizione_cp2011) as descrizione_cp2011', FALSE);
         $this->db->from('rrtq_istat_cp2011');
         $query = $this->db->get();
-        $this->db->cache_off();
         return $query->result_array();
     }
 

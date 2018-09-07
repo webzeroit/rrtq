@@ -12,11 +12,9 @@ class Competenza_model extends MY_Model
 
     public function list_competenza()
     {
-        $this->db->cache_on();
         $this->db->select('id_competenza, titolo_competenza, descrizione_competenza, risultato_competenza, oggetto_di_osservazione, indicatori, livello_eqf');
         $this->db->from('rrtq_competenza');
         $query = $this->db->get();
-        $this->db->cache_off();
         return $query->result_array();
     }
 
@@ -85,7 +83,6 @@ class Competenza_model extends MY_Model
             }
             else
             {
-                $this->db->cache_delete_all();
                 /* LOG ACTIVITY */
                 $this->activity->log("add", array(
                     'id' => $id_competenza,
@@ -168,7 +165,6 @@ class Competenza_model extends MY_Model
             }
             else
             {
-                $this->db->cache_delete_all();
                 /* LOG ACTIVITY */
                 $this->activity->log("edit", array(
                     'id' => $id_competenza,
@@ -264,7 +260,6 @@ class Competenza_model extends MY_Model
             else
             {
                 /* LOG ACTIVITY */
-                $this->db->cache_delete_all();
                 $this->activity->log("delete", array(
                     'id' => $id,
                     'table' => 'Competenza',

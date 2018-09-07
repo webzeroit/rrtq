@@ -59,11 +59,14 @@
                         <div class="controls">
                             <select id="id_abilita" name="id_abilita[]" class="select2 m-b-10 select2-multiple" style="width: 100%" multiple="multiple">
                                 <?php
-                                foreach ($list_abilita as $abilita)
+                                if ($list_abilita !== NULL)
                                 {
-                                    ?>
-                                    <option value="<?= $abilita['id_abilita'] ?>" selected="selected"><?= $abilita['descrizione_abilita'] ?></option>
-                                    <?php
+                                    foreach ($list_abilita as $abilita)
+                                    {
+                                        ?>
+                                        <option value="<?= $abilita['id_abilita'] ?>" selected="selected"><?= $abilita['descrizione_abilita'] ?></option>
+                                        <?php
+                                    }
                                 }
                                 ?>
                             </select>
@@ -75,11 +78,14 @@
                         <div class="controls">
                             <select id="id_conoscenza" name="id_conoscenza[]" class="select2 m-b-10 select2-multiple" style="width: 100%" multiple="multiple">
                                 <?php
-                                foreach ($list_conoscenza as $conoscenza)
+                                if ($list_conoscenza !== NULL)
                                 {
-                                    ?>
-                                    <option value="<?= $conoscenza['id_conoscenza'] ?>" selected="selected"><?= $conoscenza['descrizione_conoscenza'] ?></option>
-                                    <?php
+                                    foreach ($list_conoscenza as $conoscenza)
+                                    {
+                                        ?>
+                                        <option value="<?= $conoscenza['id_conoscenza'] ?>" selected="selected"><?= $conoscenza['descrizione_conoscenza'] ?></option>
+                                        <?php
+                                    }
                                 }
                                 ?>
                             </select>   
@@ -309,7 +315,6 @@
                             if (type === "sort" || type === 'type') {
                                 return data[3];
                             } else {
-                                console.log("reg=" + data[3]);
                                 var reg = '';
                                 if (parseInt(data[3]) == 1)
                                     reg = 'SI';
@@ -363,8 +368,8 @@
                     }
                 ],
                 "drawCallback": function () {
-                    $('[data-toggle="tooltip"]').tooltip();
-                    $('[data-toggle="popover"]').popover();
+                    $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+                    $('[data-toggle="popover"]').popover({trigger : 'hover'});
                 }
             });
         }
@@ -419,6 +424,12 @@
             e.preventDefault();
             $('#descrizione_abilita').val('');
         });
+        
+        /* Aggiungi nuova Abilità contestualmente */
+        $("#btn_add_conoscenza").click( function (e) {
+            e.preventDefault();
+            $('#descrizione_conoscenza').val('');
+        });        
         
         $('#frm_dati_abilita').on('submit', function (form) {
             form.preventDefault();

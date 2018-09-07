@@ -19,3 +19,10 @@ $hook['post_controller_constructor'][] = array(
 	'filepath' => 'hooks',
 	'params'   => array()
 );
+
+$hook['pre_system'][] = array(
+    'class'    => 'MaintenanceEnabler',
+    'function' => 'offline_check',
+    'filename' => 'hook.maintenance.php',
+    'filepath' => 'hooks'
+);

@@ -23,7 +23,7 @@
                         </div>
                     </div> 
                     <div class="form-group">
-                        <h5>Titolo qualificazione <span class="text-danger">*</span></h5>
+                        <h5 class="text-info">Titolo qualificazione <span class="text-danger">*</span></h5>
                         <div class="controls">
                             <input type="text" id="titolo_profilo" name="titolo_profilo" maxlength="255" class="form-control"
                                    value="<?php echo set_value('titolo_profilo', $profilo['titolo_profilo']); ?>"> 
@@ -34,7 +34,7 @@
                         <div class="controls">
                             <select id="id_ada" name="id_ada[]" class="select2 m-b-10 select2-multiple" style="width: 100%" multiple="multiple">
                                 <?php
-                                foreach ($list_ada as $ada)
+                                foreach ((array)$list_ada as $ada)
                                 {
                                     ?>
                                     <option value="<?= $ada['id_ada'] ?>"><?= $ada['descrizione_ada'] ?></option>
@@ -147,7 +147,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <h5>Ultimo scarico INAPP </h5>
+                                    <h5>Ultimo export INAPP </h5>
                                     <div class="controls">
                                         <input type="text" id="data_ultimo_export" name="data_ultimo_export" class="form-control" readonly
                                                value="<?php echo set_value('data_ultimo_export', convertsDataOraInItalianFormat($profilo['data_ultimo_export'])); ?>"> 
@@ -171,233 +171,131 @@
     </div>  
 </div>
 
-<?php if ($action === "edit")
-{ ?>
-    <!-- ASSOCIAZIONE COMPETENZE PROFILO-->
-    <div id="div_associa_competenza" class="row">
-        <div class="col-12">  
-            <div class="card">
-                <div class="card-body">   
-                    <h4 class="card-title">Associazione Unità di Competenza</h4>
-                    <h6 class="card-subtitle">Seleziona l'unità di competenza da associare al profilo</h6>  
-                    <form class="m-t-30" id="frm_associa_competenza">
-                        <div class="form-group">
-                            <div class="controls">
-                                <label class="control-label">Unità di Competenza <span class="text-danger">*</span></label>
-                                <select id="id_competenza" name="id_competenza" class="select2 form-control custom-select" style="width: 100%; height:46px;">
-                                    <option value=""></option>                                       
-                                </select>
-                            </div>
-                        </div>
-                        <div id="div_dettaglio_competenza" class="row m-t-30 m-b-40">
-                            <div class="col-lg-6">
-                                <h5>Abilità</h5>
-                                <ol id="list_abilita" class="list-icons">
-
-                                </ol>
-                            </div>
-                            <div class="col-lg-6">
-                                <h5>Conoscenze</h5>
-                                <ol id="list_conoscenza" class="list-icons">
-                                </ol>
-                            </div>                                    
-                        </div>
-                        <?php echo form_hidden('action_competenza', 'add'); ?> 
-                        <?php echo form_hidden('id_profilo', $id_profilo); ?>
-                        <div class="form-actions">
-                            <button id="btn_salva_associazione_comp" name="btn_salva_associazione_comp" type="submit" class="btn btn-info">Salva associazione</button>  
-                            <button type="button" id="btn_chiudi_associazione_comp" class="btn btn-inverse">Chiudi</button>   
-                        </div>                        
-                    </form>                        
-                </div>                    
-            </div>
-        </div>
-    </div>
-
-    <!-- TABELLA COMPETENZE PROFILO-->
-    <div class="row m-t-5">
-        <div class="col-12">  
-            <div class="card">
-                <div class="card-body">   
-                    <h4 class="card-title">Unità di Competenza</h4>
-                    <h6 class="card-subtitle">La tabella contiene le unità di competenza associate alla qualificazione. 
-                        Qualsiasi modifica alla composizione delle UC di una qualificazione <i>Pubblicata</i> o con <i>Revisioni Validate</i> ne comporterà la
-                        variazione di stato <i>In Revisione</i>.</h6>            
-                    <div div class="table-responsive m-t-5 m-b-40">
-                        <table id="dt_competenze_profilo" class="table table-hover table-bordered" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>id_profilo</th>
-                                    <th>id_competenza</th>
-                                    <th>Titolo</th>
-                                    <th>Descrizione</th>
-                                    <th>Risultato atteso</th>
-                                    <th>Oggetto di osservazione</th>
-                                    <th>Indicatori</th>
-                                    <th>Livello EQF</th>
-                                    <th>Azione</th> 
-                                </tr>                            
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="button-group">                    
-                        <button id="btn_add_competenza_profilo" name="btn_add_competenza_profilo" class="btn btn-info">Associa nuova competenza</button>      
-                    </div>                
+<?php if ($action === "edit") { ?>
+        <!-- ASSOCIAZIONE COMPETENZE PROFILO-->
+        <div id="div_associa_competenza" class="row">
+            <div class="col-12">  
+                <div class="card">
+                    <div class="card-body">   
+                        <h4 class="card-title">Associazione Unità di Competenza</h4>
+                        <h6 class="card-subtitle">Seleziona l'unità di competenza da associare al profilo</h6>  
+                        <form class="m-t-30" id="frm_associa_competenza">
+                            <div class="form-group">
+                                <div class="controls">
+                                    <label class="control-label">Unità di Competenza <span class="text-danger">*</span></label>
+                                    <select id="id_competenza" name="id_competenza" class="select2 form-control custom-select" style="width: 100%; height:46px;">
+                                        <option value=""></option>                                       
+                                    </select>
+                                    <div class="form-control-feedback"><small><i><a id="btn_dettaglio_uc" href="#" data-toggle="modal" data-target="#UcModal">Clicca</a> per visualizzare il dettaglio della UC selezionata</i></small></div>
+                                </div>
+                            </div>                            
+                            <?php echo form_hidden('action_competenza', 'add'); ?> 
+                            <?php echo form_hidden('id_profilo', $id_profilo); ?>
+                            <div class="form-actions">
+                                <button id="btn_salva_associazione_comp" name="btn_salva_associazione_comp" type="submit" class="btn btn-info">Salva associazione</button>  
+                                <button type="button" id="btn_chiudi_associazione_comp" class="btn btn-inverse">Chiudi</button>   
+                            </div>                        
+                        </form>                        
+                    </div>                    
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- TABELLA COMPETENZE PROFILO-->
+        <div class="row m-t-5">
+            <div class="col-12">  
+                <div class="card">
+                    <div class="card-body">   
+                        <h4 class="card-title">Unità di Competenza</h4>
+                        <h6 class="card-subtitle">La tabella contiene le unità di competenza associate alla qualificazione. 
+                            Qualsiasi modifica alla composizione delle UC di una qualificazione <i>Pubblicata</i> o con <i>Revisioni Validate</i> ne comporterà la
+                            variazione di stato <i>In Revisione</i>.</h6>            
+                        <div div class="table-responsive m-t-5 m-b-40">
+                            <table id="dt_competenze_profilo" class="table color-table info-table table-hover table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>id_profilo</th>
+                                        <th>id_competenza</th>
+                                        <th>Titolo</th>
+                                        <th>Descrizione</th>
+                                        <th>Risultato atteso</th>
+                                        <th>Oggetto di osservazione</th>
+                                        <th>Indicatori</th>
+                                        <th>Livello EQF</th>
+                                        <th>Azione</th> 
+                                    </tr>                            
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="button-group">                    
+                            <button id="btn_add_competenza_profilo" name="btn_add_competenza_profilo" class="btn btn-info">Associa nuova competenza</button>      
+                        </div>                
+                    </div>
+                </div>
+            </div>
+        </div>
        
-    <div id="q_tools" class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Controllo delle modifiche</h4>
-                    <h6 class="card-subtitle">I file generati dai tools contengono le modifiche successive all'ultima pubblicazione della qualificazione</h6>
-                    <div class="button-group">
-                        <a href="<?php echo base_url('/public/GeneraPDF/'.$id_profilo.'/1') ?>" target="_blank" class="btn btn-outline-info">Genera PDF</a>
-                        <a href="<?php echo base_url('/admin/qualificazione/difftool/'.$id_profilo) ?>" target="_blank" class="btn btn-outline-info">Lancia Diff Checker</a>
+        <!-- TABELLA STANDARD FORMATIVI -->
+        <div class="row m-t-5">
+            <div class="col-12">  
+                <div class="card">
+                    <div class="card-body">   
+                        <h4 class="card-title">Standard Formativi</h4>
+                        <h6 class="card-subtitle">La tabella contiene gli Standard Formativi associati alla qualificazione. 
+                            L'aggiunta o la modifica di uno standard formativo associato ad una qualificazione <i>Pubblicata</i> o con <i>Revisioni Validate</i> ne comporterà la
+                            variazione di stato <i>In Revisione</i>.</h6>            
+                        <div div class="table-responsive m-t-5 m-b-40">
+                            <table id="dt_st_formativi_profilo" class="table color-table warning-table table-hover table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>id_standard_formativo</th>
+                                        <th>Descrizione Standard Formativo</th>                                   
+                                        <th>Azione</th> 
+                                    </tr>                            
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="button-group">                    
+                            <button id="btn_add_standard_formativo" name="btn_add_standard_formativo" class="btn btn-warning">Nuovo Standard Formativo</button>      
+                        </div>                
                     </div>
                 </div>
             </div>
-        </div>
-    </div>    
+        </div>   
     
-<?php } ?>
+        <!-- QUALITY TOOLS -->
+        <div id="q_tools" class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Controllo delle modifiche</h4>
+                        <h6 class="card-subtitle">I file generati dai tools contengono le modifiche successive all'ultima pubblicazione della qualificazione</h6>
+                        <div class="button-group">
+                            <a href="<?php echo base_url('/public/stampa/sp/' . $id_profilo . '/1') ?>" target="_blank" class="btn btn-outline-info">Genera PDF</a>
+                            <a href="<?php echo base_url('/admin/qualificazione/difftool/' . $id_profilo) ?>" target="_blank" class="btn btn-outline-info">Lancia Diff Checker</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
     
-    
-
-    
-<script language="javascript" type="text/javascript">
-    function refresh_stato_qualificazione(id)
-    {
-       $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_stato_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {
-                 $("#data_ultima_modifica").val(data['data_ultima_modifica']);
-                 $("#id_stato_profilo").val(data['id_stato_profilo']);
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         }); 
-    }
-    function carica_campi_processo(id)
-    {
-        $("#processo").empty();
-        $("#seq_processo").empty();
-        $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_processo_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {
-                 $.each(data, function(index) {
-                     $("#processo").append(data[index] + "\n");   
-                 }); 
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         });
-
-         $.ajax({
-             type: 'POST',
-             url: baseURL + 'admin/qualificazione/get_sequenza_processo_profilo_json',
-             cache: false,
-             async: false,
-             data: {id_profilo: id},
-             success: function (data) {     
-                 $.each(data, function(index) {
-                     $("#seq_processo").append(data[index] + "\n");   
-                 });                    
-             },
-             error: function () {
-                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-             }
-         });             
-    }
-    function carica_competenze_select()
-    {
-        $.ajax({
-            type: 'POST',
-            url: baseURL + 'admin/qualificazione/list_competenza_json',
-            cache: false,
-            async: false,
-            success: function (data) {
-                var newOptions = '<option value=""></option>';
-                $.each(data, function (idx, obj) {
-                    newOptions += '<option value="' + obj.id_competenza + '">' + obj.titolo_competenza + '</option>';
-                });
-                $("#id_competenza").html(newOptions);
-            },
-            error: function () {
-                swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-            }
-        });
-    }
-    
-    function del_competenza(id)
-    {
-        swal({
-            title: "Sei sicuro?",
-            text: "Verrà cancellata la riga selezionata",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "Si",
-            cancelButtonText: "No",
-            closeOnConfirm: false,
-            closeOnCancel: true
-        }, function (isConfirm) {
-            if (isConfirm) {
-                //PROSEGUI		
-                var id_profilo = $("input[name='id_profilo']").val();
-                var action = "delete";
-                $.ajax({
-                    type: 'POST',
-                    url: baseURL + 'admin/qualificazione/save_associazione_competenza',
-                    cache: false,
-                    data: {id_profilo: id_profilo, id_competenza: id, action_competenza: action},
-                    success: function (data) {
-                        swal("Salva informazioni", data.message, data.esito);
-                        tabella_competenze.ajax.reload();
-                        refresh_stato_qualificazione(id_profilo);
-                        display_qtool();
-                    },
-                    error: function () {
-                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-                    }
-                });
-            }
-        });
-    }
-    
-    function display_qtool()
-    {
-        /* default invisibile */
-        $('#q_tools').hide();
-        /* In action=add non lo visualizza */
-        var action = $("input[name='action']").val();
-        if (action !== 'edit')
-            return;
-        var curr_stato = $("#id_stato_profilo").val();
-        if (parseInt(curr_stato) > 0)
-            $('#q_tools').show();
+        <?php 
+            $this->load->section('dettaglio_uc', 'section/dettaglio_uc');
+            if($this->load->get_section('dettaglio_uc') != '') {
+                echo $this->load->get_section('dettaglio_uc');
+            } 
+        ?>  
         
-    }
-</script>
-    
+<?php } ?>
+              
 <script language="javascript" type="text/javascript">
     var tabella_competenze;
-
+    var tabella_standard_formativi;
+    
     $(document).ready(function () {
         "use strict";
         //$("input,select,textarea").not("[type=submit],[class=select2]").jqBootstrapValidation();
@@ -416,7 +314,13 @@
             $(".select2-multiple").select2(std_options_multi);
         }
 
-
+        /* Visualizza dettaglio UC contestualmente */
+        $("#btn_dettaglio_uc").click( function (e) {
+            e.preventDefault();                  
+            if (typeof(loadUc) === "function"){
+                loadUc($("#id_competenza").val(), 0);
+            }
+        });
         /* Gestione Profilo  */
         var id_profilo = $("input[name='id_profilo']").val();
         var action = $("input[name='action']").val();        
@@ -535,8 +439,7 @@
                 "processing": false, //Feature control the processing indicator.
                 "serverSide": true, //Feature control DataTables' server-side processing mode.
                 "paging": false,
-                "lengthChange": false,
-                "order": [[2, "asc"]],
+                "lengthChange": false,                
                 "dom": 'lfrtip',
                 ajax: {
                     "url": "<?php echo base_url() . 'admin/Qualificazione/get_datatables_profilo_competenza_json' ?>",
@@ -558,29 +461,53 @@
                     {"targets": [8], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
                 ],
                 "drawCallback": function () {
-                    $('[data-toggle="tooltip"]').tooltip();
-                    $('[data-toggle="popover"]').popover();
+                    $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+                    $('[data-toggle="popover"]').popover({trigger : 'hover'});
                 }
             });
 
+            tabella_standard_formativi = $('#dt_st_formativi_profilo').DataTable({
+                "language": {
+                    "url": baseURL + "/assets/plugins/datatables-plugins/i18n/Italian.json"
+                },
+                "processing": false, //Feature control the processing indicator.
+                "serverSide": true, //Feature control DataTables' server-side processing mode.
+                "paging": false,
+                "lengthChange": false,
+                "order": [[1, "asc"]],
+                "dom": 'lfrtip',
+                ajax: {
+                    "url": "<?php echo base_url() . 'admin/Qualificazione/get_datatables_profilo_st_formativo_json' ?>",
+                    "type": "POST",
+                    "data": {
+                        "id_profilo": id_profilo
+                    }
+                },
+                //Set column definition initialisation properties.
+                "columnDefs": [
+                    {"targets": [0], "visible": false, "searchable": false},
+                    {"targets": [1], "visible": true, "searchable": true, "width": "90%"},                   
+                    {"targets": [2], "visible": true, "searchable": false, "orderable": false, "width": "10%"}
+                ],
+                "drawCallback": function () {
+                    $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+                    $('[data-toggle="popover"]').popover({trigger : 'hover'});
+                }
+            });
         }
         /* Fine Gestione Profilo */
 
-
-
-
         /* Gestione Competenza  */
         $('#div_associa_competenza').hide();
-        $('#div_dettaglio_competenza').hide();
+        
         $('#btn_add_competenza_profilo').click(function () {
             carica_competenze_select();
             $('#div_associa_competenza').slideDown();
             $(window).scrollTop($('#div_associa_competenza').offset().top - 200);
-            $('#div_dettaglio_competenza').hide();
+
         });
         $('#btn_chiudi_associazione_comp').click(function () {
             $('#div_associa_competenza').slideUp();
-            $('#div_dettaglio_competenza').hide();
         });
         $('#frm_associa_competenza').on('submit', function (form) {
             form.preventDefault();
@@ -594,7 +521,6 @@
                     swal("Salva informazioni", data.message, data.esito);
                     if (data.esito !== "error")
                     {
-                        $('#div_dettaglio_competenza').hide();
                         $('#div_associa_competenza').slideUp();
                         tabella_competenze.ajax.reload();
                         refresh_stato_qualificazione(id_profilo);
@@ -607,52 +533,176 @@
             });
 
         });
-        $("#id_competenza").change(function () {
-            var curr_competenza = $("#id_competenza").val();
-            $('#div_dettaglio_competenza').show();
-            /*LISTA ABILITA*/
-            $.ajax({
-                type: 'POST',
-                url: baseURL + 'admin/qualificazione/list_competenza_abilita_json',
-                cache: false,
-                async: false,
-                data: {id_competenza: curr_competenza},
-                success: function (data) {
-                    var lista_1 = '';
-                    $.each(data, function (idx, obj) {
-                        lista_1 += '<li>' + obj.descrizione_abilita + '</li>';
-                    });
-                    $("#list_abilita").html(lista_1);
-                },
-                error: function () {
-                    swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-                }
-            });
-            /*LISTA CONOSCENZE*/
-            $.ajax({
-                type: 'POST',
-                url: baseURL + 'admin/qualificazione/list_competenza_conoscenza_json',
-                cache: false,
-                async: false,
-                data: {id_competenza: curr_competenza},
-                success: function (data) {
-                    var lista_2 = '';
-                    $.each(data, function (idx, obj) {
-                        lista_2 += '<li>' + obj.descrizione_conoscenza + '</li>';
-                    });
-                    $("#list_conoscenza").html(lista_2);
-                },
-                error: function () {
-                    swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
-                }
-            });
-
-        });
+        
+        
         /* Fine Gestione Competenza */
 
+        /* Gestione Standard Formativo  */
+        $('#btn_add_standard_formativo').click(function () {            
+            window.location.href = baseURL + 'admin/standardformativo/nuovo/' + id_profilo;
+        });
+        /* Fine Gestione Standard Formativo */
+        
         /* Gestione QTools */
         display_qtool();
+        /* Fine Gestione QTools */
 
     });
 
+</script>
+<script language="javascript" type="text/javascript">
+    function refresh_stato_qualificazione(id)
+    {
+       $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_stato_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {
+                 $("#data_ultima_modifica").val(data['data_ultima_modifica']);
+                 $("#id_stato_profilo").val(data['id_stato_profilo']);
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         }); 
+    }
+    function carica_campi_processo(id)
+    {
+        $("#processo").empty();
+        $("#seq_processo").empty();
+        $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_processo_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {
+                 $.each(data, function(index) {
+                     $("#processo").append(data[index] + "\n");   
+                 }); 
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         });
+
+         $.ajax({
+             type: 'POST',
+             url: baseURL + 'admin/qualificazione/get_sequenza_processo_profilo_json',
+             cache: false,
+             async: false,
+             data: {id_profilo: id},
+             success: function (data) {     
+                 $.each(data, function(index) {
+                     $("#seq_processo").append(data[index] + "\n");   
+                 });                    
+             },
+             error: function () {
+                 swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+             }
+         });             
+    }
+    function carica_competenze_select()
+    {
+        $.ajax({
+            type: 'POST',
+            url: baseURL + 'admin/qualificazione/list_competenza_json',
+            cache: false,
+            async: false,
+            success: function (data) {
+                var newOptions = '<option value=""></option>';
+                $.each(data, function (idx, obj) {
+                    newOptions += '<option value="' + obj.id_competenza + '">' + obj.titolo_competenza + '</option>';
+                });
+                $("#id_competenza").html(newOptions);
+            },
+            error: function () {
+                swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+            }
+        });
+    }
+    function del_competenza(id)
+    {
+        swal({
+            title: "Sei sicuro?",
+            text: "Verrà cancellata la riga selezionata",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Si",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                //PROSEGUI		
+                var id_profilo = $("input[name='id_profilo']").val();
+                var action = "delete";
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL + 'admin/qualificazione/save_associazione_competenza',
+                    cache: false,
+                    data: {id_profilo: id_profilo, id_competenza: id, action_competenza: action},
+                    success: function (data) {
+                        swal("Salva informazioni", data.message, data.esito);
+                        tabella_competenze.ajax.reload();
+                        refresh_stato_qualificazione(id_profilo);
+                        display_qtool();
+                    },
+                    error: function () {                        
+                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                    }
+                });
+            }
+        });
+    }
+    function del_standard(id)
+    {
+        swal({
+            title: "Sei sicuro?",
+            text: "Verrà cancellata la riga selezionata",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Si",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                //PROSEGUI		
+                var id_profilo = $("input[name='id_profilo']").val();
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL + 'admin/standardformativo/elimina_standard_formativo_json',
+                    cache: false,
+                    data: {id_standard_formativo: id},
+                    success: function (data) {
+                        swal("Salva informazioni", data.message, data.esito);
+                        tabella_standard_formativi.ajax.reload();
+                        refresh_stato_qualificazione(id_profilo);
+                        display_qtool();
+                    },
+                    error: function () {
+                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                    }
+                });
+            }
+        });
+    }
+    function display_qtool()
+    {
+        /* default invisibile */
+        $('#q_tools').hide();
+        /* In action=add non lo visualizza */
+        var action = $("input[name='action']").val();
+        if (action !== 'edit')
+            return;
+        var curr_stato = $("#id_stato_profilo").val();
+        if (parseInt(curr_stato) > 0)
+            $('#q_tools').show();
+        
+    }
 </script>

@@ -17,21 +17,52 @@ class Profilo_model extends MY_Model
     public function datatables_profili()
     {
         $this->load->library('datatables');
+        $this->load->helper('MY_datatable_helper');
 
         $this->datatables
                 ->select('id_profilo,id_sep,titolo_profilo,rrtq_profilo.id_stato_profilo')
                 ->from('rrtq_profilo')
                 ->join('rrtq_stato_profilo', 'rrtq_profilo.id_stato_profilo = rrtq_stato_profilo.id_stato_profilo')
                 ->select('des_stato_profilo');
-
+        /*
+         * FILTRO AVANZATO
+         */
+        if ($this->input->post("id_sep"))
+        {
+            $this->datatables->where('id_sep =', $this->input->post("id_sep"));
+        }
+        if ($this->input->post("livello_eqf"))
+        {
+            $this->datatables->where('livello_eqf =', $this->input->post("livello_eqf"));
+        }
+        if (intval($this->input->post("id_stato_profilo")) >= 0)
+        {
+            $this->datatables->where('rrtq_profilo.id_stato_profilo', intval($this->input->post("id_stato_profilo")));
+        }
+        if ($this->input->post("titolo_profilo"))
+        {
+            $this->datatables->like('titolo_profilo', $this->input->post("titolo_profilo"));
+        }
+        if (intval($this->input->post("flg_regolamentato")) >= 0)
+        {
+            if (intval($this->input->post("flg_regolamentato")) === 0)
+            {
+                $where_fr = "flg_regolamentato IS NULL";
+            }
+            else
+            {
+                $where_fr = "flg_regolamentato IS NOT NULL";
+            }
+            $this->datatables->where($where_fr);
+        }
+        
         if (!$this->ion_auth->is_admin())
         {
             $this->datatables->where('rrtq_profilo.id_stato_profilo !=', 4);
         }
 
-        $action_link = '<a href="qualificazione/gestione/$1" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-        $action_link .= '<a href="../public/GeneraPDF/$1" target="_blank" data-toggle="tooltip" data-original-title="Scarica PDF"><i class="fa fa-file-pdf-o text-danger m-r-5"></i></a>';
-        $this->load->helper('MY_datatable_helper');
+        //$action_link = '<a href="qualificazione/gestione/$1" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
+        //$action_link .= '<a href="../public/GeneraPDF/$1" target="_blank" data-toggle="tooltip" data-original-title="Scarica PDF"><i class="fa fa-file-pdf-o text-danger m-r-5"></i></a>';
         //$this->datatables->add_column('azione', $action_link, 'id_profilo');
         //CHIAMATA DI CALLBACK 
         $this->datatables->add_column('azione', '$1', 'dt_profilo_action(id_profilo,id_stato_profilo)');
@@ -62,10 +93,25 @@ class Profilo_model extends MY_Model
                 ->select('titolo_competenza,descrizione_competenza,risultato_competenza,oggetto_di_osservazione,indicatori,livello_eqf')
                 ->where('id_profilo', $id_profilo);
 
-        $action_link = '<a href="' . base_url() . 'admin/unitacompetenza/gestione/$1" data-toggle="tooltip" data-original-title="Modifica"> <i class="fa fa-eye text-inverse m-r-5"></i> </a>';
+        $action_link = '<a href="' . base_url() . 'admin/unitacompetenza/gestione/$1" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
         $action_link .= '<a href="javascript:del_competenza($1);" data-toggle="tooltip" data-original-title="Dissocia"><i class="fa fa-chain-broken text-danger m-r-5"></i></a>';
 
         $this->datatables->add_column('azione', $action_link, 'id_competenza');
+
+        return $this->datatables->generate();
+    }
+
+    public function datatables_profilo_st_formativo($id_profilo)
+    {
+        $this->load->library('datatables');
+        $this->load->helper('MY_datatable_helper');
+
+        $this->datatables
+                ->select('id_standard_formativo, des_standard_formativo')
+                ->from('rrtq_standard_formativo')
+                ->where('id_profilo', $id_profilo);
+
+        $this->datatables->add_column('azione', '$1', 'dt_standard_formativo_action(id_standard_formativo)');
 
         return $this->datatables->generate();
     }
@@ -93,6 +139,7 @@ class Profilo_model extends MY_Model
              * 2018-07-16 In inserimento per default il profilo è impostato a In Revisione
              */
             $this->db->set('id_stato_profilo', 2);
+            $this->db->set('data_ultima_modifica', 'NOW()', FALSE);
             $this->db->set($data['profilo']);
             $this->db->insert('rrtq_profilo');
 
@@ -256,7 +303,7 @@ class Profilo_model extends MY_Model
 
 
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
@@ -272,27 +319,70 @@ class Profilo_model extends MY_Model
         return TRUE;
     }
 
+    public function list_ridondanze_abilita($id_profilo)
+    {
+        $this->db->select('id_abilita,ridondanze');
+        $this->db->from('v_rrtq_profilo_ridondanze_abilita');
+        $this->db->where('id_profilo', $id_profilo);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    
+    public function list_ridondanze_conoscenza($id_profilo)
+    {
+        $this->db->select('id_conoscenza,ridondanze');
+        $this->db->from('v_rrtq_profilo_ridondanze_conoscenza');
+        $this->db->where('id_profilo', $id_profilo);
+        $query = $this->db->get();
+        return $query->result_array();
+    }    
+    
+    /*GESTIONE DEGLI STATI*/
     public function avvia_pubblicazione($id)
     {
+
+        //AVVIO TRANSAZIONE
+        $this->db->trans_start();
+
         $this->db->set('id_stato_profilo', 0);
         $this->db->set('file_qualificazione', NULL);
+        $this->db->set('data_ultima_pubblicazione', 'NOW()', FALSE);
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
-        $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+
+        $this->db->set('data_ultima_pubblicazione', 'NOW()', FALSE);
+        $this->db->where('id_profilo', $id);
+        $this->db->update('rrtq_standard_formativo');
+
+        //06/09/2018 ARCHIVIO STORICO DELLE PUBBLICAZIONI
+        $this->load->model('qualificazione_model');
+        $file_da_storicizzare = $this->qualificazione_model->select_qualificazione($id);
+        
+        $this->db->set('id_profilo', $id);
+        $this->db->set('data_pubblicazione', 'NOW()', FALSE);
+        $this->db->set('file_qualificazione', serialize($file_da_storicizzare));
+        $this->db->insert('rrtq_archivio_pubblicazioni');
+        
+        //FINE TRANSAZIONE
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE)
         {
             return FALSE;
         }
-        /* LOG ACTIVITY */
-        $this->activity->log('publish', array('id' => $id, 'table' => 'Qualificazione'));
-        /* END LOG */
-        /* MESSAGES NOTIFICATION SYSTEM */
-        if ($this->config->item('enable_messages'))
+        else
         {
-            $this->messaggistica->invia_messaggio('avvia_pubblicazione', $this->get_titoli_profilo($id));
+            /* LOG ACTIVITY */
+            $this->activity->log('publish', array('id' => $id, 'table' => 'Qualificazione'));
+            /* END LOG */
+            /* MESSAGES NOTIFICATION SYSTEM */
+            if ($this->config->item('enable_messages'))
+            {
+                $this->messaggistica->invia_messaggio('avvia_pubblicazione', $this->get_titoli_profilo($id));
+            }
+            /* END MESSAGES */
+            return TRUE;
         }
-        /* END MESSAGES */
-        return TRUE;
     }
 
     public function sospendi_pubblicazione($id)
@@ -301,7 +391,7 @@ class Profilo_model extends MY_Model
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
@@ -323,7 +413,7 @@ class Profilo_model extends MY_Model
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
@@ -345,7 +435,7 @@ class Profilo_model extends MY_Model
         $this->db->where('id_profilo', $id);
         $this->db->update('rrtq_profilo');
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
@@ -361,10 +451,39 @@ class Profilo_model extends MY_Model
         return TRUE;
     }
 
-    /*
-     * Considerare la questione relativa allo stato NON PUBBLICATO 
-     * se deve passare in revisione o non va modificato 
-     */
+    public function restore_profilo($id)
+    {
+        $id_ultimo_stato = 2; //IN REVISIONE
+        $this->db->select('file_qualificazione');
+        $this->db->where('id_profilo', $id);
+        $this->db->from('rrtq_profilo');
+        $query = $this->db->get();
+        $ret = $query->row_array();
+
+        if ($ret['file_qualificazione'] === NULL)
+        {
+            $id_ultimo_stato = 0;
+        }
+
+        $this->db->set('id_stato_profilo', $id_ultimo_stato);
+        $this->db->where('id_profilo', $id);
+        $this->db->update('rrtq_profilo');
+        $db_error = $this->db->error();
+        if ($db_error["code"] !== 0)
+        {
+            return FALSE;
+        }
+        /* LOG ACTIVITY */
+        $this->activity->log('restore_ok', array('id' => $id, 'table' => 'Qualificazione'));
+        /* END LOG */
+        /* MESSAGES NOTIFICATION SYSTEM */
+        if ($this->config->item('enable_messages'))
+        {
+            $this->messaggistica->invia_messaggio('ripristina_qualificazione', $this->get_titoli_profilo($id));
+        }
+        /* END MESSAGES */
+        return TRUE;
+    }
 
     public function setta_revisione_profili($ids)
     {
@@ -394,6 +513,11 @@ class Profilo_model extends MY_Model
                 $this->db->update('rrtq_profilo');
                 $id_da_notificare[] = $id_profilo;
             }
+            //Quando lo stato corrente è NON PUBBLICATO e si modifica una qualificazione,
+            //lo stato non cambia ma non si attiva il controolo delle modifiche ( In Revisione, etc.). 
+            //Per evitare che questo avvenga e gestire il processo di validazione delle modifiche
+            //la versione corrente dovrebbe passare a "In revisione" e settare a NULL "data_ultima_pubblicazione"
+            // Facendo così il pubblico non visualizza la qualificazione in elenco.
         }
 
         if (count($ids) > 0)
@@ -434,7 +558,6 @@ class Profilo_model extends MY_Model
     }
 
     /* OTTIENE LE DENOMINAZIONI DEI PROFILI PER LOG ED EMAIL */
-
     private function get_titoli_profilo($ids)
     {
         // crea un array se solo un ID è stato passato

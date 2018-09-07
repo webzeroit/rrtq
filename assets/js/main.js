@@ -34,8 +34,8 @@ $(function () {
         if (height > topOffset) {
             $(".page-wrapper").css("min-height", (height) + "px");
         }
-        $('[data-toggle="tooltip"]').tooltip();
-        $('[data-toggle="popover"]').popover();
+        $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+        $('[data-toggle="popover"]').popover({trigger : 'hover'});
     };
     $(window).ready(set);
     $(window).on("resize", set);
@@ -104,14 +104,14 @@ $(function () {
     //Tooltip
     // ============================================================== 
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
     });
 
     // ============================================================== 
     //Popover
     // ============================================================== 
     $(function () {
-        $('[data-toggle="popover"]').popover();
+        $('[data-toggle="popover"]').popover({trigger : 'hover'});
     });
 
     // ============================================================== 

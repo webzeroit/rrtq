@@ -12,11 +12,10 @@ class Ateco_model extends MY_Model
 
     public function list_ateco()
     {
-        $this->db->cache_on();
+        
         $this->db->select('codice_ateco,CONCAT(codice_ateco," - ", descrizione_ateco) as descrizione_ateco', FALSE);
         $this->db->from('rrtq_istat_ateco2007');
         $query = $this->db->get();
-        $this->db->cache_off();
         return $query->result_array();
     }
 

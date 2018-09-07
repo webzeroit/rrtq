@@ -1,3 +1,87 @@
+<!--RICERCA-->
+<div id="form-filter-div" class="row" style="display:none;">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <h4 class="m-b-0 text-white">Ricerca avanzata</h4>               
+            </div>
+            <div class="card-body">
+                <form id="form-filter" novalidate autocomplete="off">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label class="control-label">Settore Economico Professionale</label>
+                                    <select id="id_sep" name="id_sep" class="form-control">
+                                        <option value="0">Tutti</option>
+                                        <?php foreach ($list_sep as $sep){ ?>
+                                            <option value="<?= $sep['id_sep'] ?>"><?= $sep['descrizione_sep'] ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Livello EQF</label>
+                                    <select id="livello_eqf" name="livello_eqf" class="form-control">
+                                        <option value="0">Tutti</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                    </select>
+                                </div>
+                            </div>                               
+                        </div>  
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="controls">
+                                        <label class="control-label">Denominazione qualificazione</label>
+                                        <input type="text" id="titolo_profilo" class="form-control" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Regolamentata</label>
+                                    <select id="flg_regolamentato" name="flg_regolamentato" class="form-control">
+                                        <option value="-1">Tutte</option>
+                                        <option value="0">NO</option>
+                                        <option value="1">SI</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Stato</label>
+                                    <select id="id_stato_profilo" name="id_stato_profilo" class="form-control">
+                                        <option value="-1">Tutti</option>
+                                        <option value="0">Pubblicato</option>
+                                        <option value="1">Revisioni Validate</option>
+                                        <option value="2">In Revisione</option>
+                                        <option value="3">Non Pubblicato</option>
+                                    </select>
+                                </div>
+                            </div>                             
+                        </div>                    
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="btn-filter" class="btn btn-info"><i class="fa fa-search"></i> Cerca</button>
+                        <button type="button" id="btn-reset" class="btn btn-secondary"><i class="fa fa-eraser"></i> Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -20,6 +104,7 @@
                 </div>
                 <div class="button-group">                    
                     <a href="qualificazione/gestione" role="button" id="btn_add_profilo" name="btn_add_profilo" class="btn btn-info">Nuova qualificazione</a>      
+                    <button id="btn_ricerca" name="btn_ricerca" class="btn btn-outline-info">Ricerca avanzata</button>
                 </div>             
             </div>
         </div>  
@@ -38,7 +123,24 @@
             "dom": 'lfrtip',
             ajax: {
                 "url": "<?php echo base_url() . 'admin/Qualificazione/get_datatables_profili_json' ?>",
-                "type": "POST"
+                "type": "POST",
+                "data":  function (data) {
+                    if ($('#titolo_profilo').val() !== "")
+                    {
+                       data.titolo_profilo = $('#titolo_profilo').val();                   
+                    }
+                    if ($('#id_sep').val() !== "0")
+                    {
+                       data.id_sep = $('#id_sep').val();                
+                    }
+                    if ($('#livello_eqf').val() !== "0")
+                    {
+                       data.livello_eqf = $('#livello_eqf').val();                
+                    }
+                    data.id_stato_profilo = $('#id_stato_profilo').val();                
+                    data.flg_regolamentato = $('#flg_regolamentato').val();                
+                    
+                }                
             },
             //Set column definition initialisation properties.
             "columnDefs": [
@@ -75,10 +177,35 @@
                 {"targets": [5], "visible": true, "searchable": false, "orderable": false, "width": "15%"}
             ],
             "drawCallback": function () {
-                $('[data-toggle="tooltip"]').tooltip();
-                $('[data-toggle="popover"]').popover();
+                $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+                $('[data-toggle="popover"]').popover({trigger : 'hover'});
             }
         });
+        
+        
+        
+        $('#btn_ricerca').on("click", function () {
+            $("#form-filter-div").slideDown();
+            $(window).scrollTop($('#form-filter-div').offset().top - 130);  
+        });
+        
+        $('#btn-filter').click(function () { //button filter event click
+            tabella_qualificazioni.ajax.reload(); //just reload table
+        });
+
+        $('#btn-reset').click(function () { //button reset event click
+            $('#form-filter')[0].reset();
+            if ($.fn.select2) {
+                $('#form-filter select.select2').val('').trigger('change');
+            }        
+            $("#form-filter-div").slideUp();
+            tabella_qualificazioni.ajax.reload(); //just reload table
+        });  
+        
+        $('#form-filter-div').submit( function(e){ 
+            e.preventDefault();
+            tabella_qualificazioni.ajax.reload(); //just reload table
+        });        
     });
     
     function sospendi_pubblicazione(id)
@@ -256,7 +383,7 @@
     {
         swal({
             title: "Sei sicuro?",
-            text: "La qualificazioni sarà ripristinata all'ultima versione prima della cancellazione e lo stato di Non Pubblicata",
+            text: "La qualificazioni sarà ripristinata all'ultima versione prima della cancellazione",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
@@ -268,7 +395,7 @@
             if (isConfirm) {
                 //PROSEGUI		
                 var id_profilo = id;
-                var action = "start";
+                var action = "restore";
                 $.ajax({
                     type: 'POST',
                     url: baseURL + 'admin/qualificazione/edita_pubblicazione_json',

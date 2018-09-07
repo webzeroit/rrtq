@@ -47,11 +47,25 @@ class Tabelle extends MY_Controller_Admin
         $this->output->set_title("Codici Professioni ISTAT 2011");
         $this->load->view('tabelle/cp2011');
     }
+    
+    public function isced()
+    {
+        $this->load->js('assets/plugins/bootstrap-treeview-master/dist/bootstrap-treeview.min.js');
+        $this->output->set_title("Codici ISCED-F 2013");
+        $this->load->view('tabelle/isced');
+    }    
 
     /*
      * AJAX CALLS FOR TABLE
      */
 
+    public function build_isced_tree()
+    {
+        $this->load->model("isced_model", "is");
+        $output = $this->is->build_tree();
+        $this->_render_json($output);  
+    }
+    
     public function get_datatables_json()
     {
         if (!$this->input->is_ajax_request())

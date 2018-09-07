@@ -18,7 +18,7 @@ class INAPP_model extends MY_Model
             $ids = array($ids);
         }
         $output = array();
-        $this->db->select('id_profilo,titolo_profilo,descrizione_profilo,livello_eqf,id_sep');
+        $this->db->select('id_profilo,titolo_profilo,"" as descrizione_profilo,livello_eqf,id_sep');
         $this->db->where_in('id_profilo', $ids);
         $this->db->from('rrtq_profilo');
         $query = $this->db->get();

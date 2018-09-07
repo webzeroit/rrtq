@@ -12,10 +12,8 @@ class Conoscenza_model extends MY_Model
 
     public function list_conoscenza()
     {
-        $this->db->cache_on();
         $this->db->from('rrtq_conoscenza');
         $query = $this->db->get();
-        $this->db->cache_off();
         return $query->result_array();
     }
 
@@ -54,11 +52,10 @@ class Conoscenza_model extends MY_Model
             $this->db->update('rrtq_conoscenza', $data['conoscenza']);
         }
         $db_error = $this->db->error();
-        if (!$db_error["code"] === 0)
+        if ($db_error["code"] !== 0)
         {
             return FALSE;
         }
-        $this->db->cache_delete_all();
         /* LOG ACTIVITY */
         $activity_op = ($id === "" ? "add" : "edit");
         $this->activity->log($activity_op, array('id' => $id_conoscenza, 'table' => 'Conoscenza'));
@@ -125,7 +122,6 @@ class Conoscenza_model extends MY_Model
             else
             {
                 /* LOG ACTIVITY */
-                $this->db->cache_delete_all();
                 $this->activity->log("delete", array(
                     'id' => $id,
                     'table' => 'Conoscenza',

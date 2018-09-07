@@ -24,7 +24,12 @@ class Qualificazione extends MY_Controller_Admin
     public function index()
     {
         $this->output->set_title("Elenco delle qualificazioni");
-        $this->load->view('qualificazione/lista');
+        $this->load->model('sep_model');
+        $data = array(
+            'list_sep' => $this->sep_model->list_sep()
+        );
+        
+        $this->load->view('qualificazione/lista', $data);
     }
 
     public function gestione($id_profilo = NULL)
@@ -49,6 +54,7 @@ class Qualificazione extends MY_Controller_Admin
         {
             $data['action'] = "add";
             $data['profilo'] = NULL;
+            $data['list_ada'] = NULL;
         }
         else
         {
@@ -151,7 +157,7 @@ class Qualificazione extends MY_Controller_Admin
             {
                 $output = array(
                     'esito' => 'error',
-                    'message' => 'errori in inserimento'
+                    'message' => 'Si sono verificati degli errori in fase di inserimento'
                 );
             }
             else
@@ -199,6 +205,20 @@ class Qualificazione extends MY_Controller_Admin
         }
     }
 
+    public function get_datatables_profilo_st_formativo_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        if ($this->input->post("id_profilo"))
+        {
+            $this->load->model('profilo_model');
+            $output = $this->profilo_model->datatables_profilo_st_formativo($this->input->post("id_profilo"));
+            $this->_render_text($output);
+        }
+    }
+    
     public function get_ada_profilo_json()
     {
         if (!$this->input->is_ajax_request())
@@ -337,6 +357,21 @@ class Qualificazione extends MY_Controller_Admin
         $output = $this->competenza_model->list_competenza();
         $this->_render_json($output);
     }
+    
+    public function get_competenza_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $output = null;
+        if ($this->input->post('id_competenza'))
+        {
+            $this->load->model('competenza_model');
+            $output = $this->competenza_model->get_competenza($this->input->post('id_competenza'));
+        }
+        $this->_render_json($output);
+    }
 
     public function list_competenza_abilita_json()
     {
@@ -352,7 +387,7 @@ class Qualificazione extends MY_Controller_Admin
         }
         $this->_render_json($output);
     }
-
+      
     public function list_competenza_conoscenza_json()
     {
         if (!$this->input->is_ajax_request())
@@ -395,10 +430,18 @@ class Qualificazione extends MY_Controller_Admin
                 $ret = $this->profilo_model->save_associazione_competenza($data, $mode);
                 if ($ret === FALSE)
                 {
-                    $output = array(
-                        'esito' => 'error',
-                        'message' => 'errori in inserimento'
-                    );
+                    if ($mode === 'delete') {
+                        $output = array(
+                            'esito' => 'error',
+                            'message' => 'Attenzione! La Competenza è correlata con una Unità Formativa. E\' necessario rimuovere prima l\'associazione nello standard formativo.'
+                        );
+                    } else {
+                        $output = array(
+                            'esito' => 'error',
+                            'message' => 'Si sono verificati errori in fase di inserimento.'
+                        );
+
+                    }
                 }
                 else
                 {
@@ -446,6 +489,10 @@ class Qualificazione extends MY_Controller_Admin
             if ($mode === "approve")
             {
                 $ret = $this->profilo_model->approva_revisione($this->input->post('id_profilo'));
+            }
+            if ($mode === "restore")
+            {
+                $ret = $this->profilo_model->restore_profilo($this->input->post('id_profilo'));
             }
             if ($ret === FALSE)
             {
@@ -505,4 +552,37 @@ class Qualificazione extends MY_Controller_Admin
         }
     }
 
+    
+    /* LISTA ABILITA' RIDONDANTI */    
+    public function list_ridondanze_abilita_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $output = null;
+        if ($this->input->post('id_profilo'))
+        {
+            $this->load->model('profilo_model');
+            $output = $this->profilo_model->list_ridondanze_abilita($this->input->post('id_profilo'));
+        }
+        $this->_render_json($output);
+    }  
+
+    /* LISTA CONOSCENZE RIDONDANTI */    
+    public function list_ridondanze_conoscenza_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        $output = null;
+        if ($this->input->post('id_profilo'))
+        {
+            $this->load->model('profilo_model');
+            $output = $this->profilo_model->list_ridondanze_conoscenza($this->input->post('id_profilo'));
+        }
+        $this->_render_json($output);
+    }  
+    
 }

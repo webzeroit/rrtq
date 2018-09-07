@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,8 +35,11 @@
                 <h1>404</h1>
                 <h3 class="text-uppercase">Pagina non trovata</h3>
                 <p class="text-muted m-t-30 m-b-30">La pagina richiesta non è presente sul server</p>
-                <a href="<?php echo config_item('base_url') ?>" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Torna alla Home</a> </div>
-                <footer class="footer">© <?php echo date("Y"); ?> Piattaforma CAPIRE</footer>
+                <button onclick="goBack()" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Torna indietro</button>                 
+            </div>
+                <footer class="footer">                    
+                    Regione Campania - © <?php echo date("Y"); ?> Piattaforma CAPIRE
+                </footer>
         </div>
     </section>
     <!-- ============================================================== -->
@@ -51,6 +54,17 @@
 	<script src="<?php echo config_item('base_url'); ?>assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 	<!--Wave Effects -->
 	<script src="<?php echo config_item('base_url'); ?>assets/js/waves.js"></script>	
+        <script>
+        function goBack()
+        {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.close();
+            }
+        }
+        </script>
+        
 </body>
 
 </html>

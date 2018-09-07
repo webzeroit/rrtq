@@ -13,6 +13,12 @@ class Auth extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+        if (!$this->checkBrowser())
+        {
+            $message = "<b>" . $this->agent->browser() . " ver. " . $this->agent->version() . "</b><br/>";
+            $message .= "non è un browser compatibile con la piattaforma.";
+            show_error($message, 412);
+        }
         //$this->load->database();
         $this->load->library(array('ion_auth', 'form_validation'));
 
@@ -20,6 +26,43 @@ class Auth extends CI_Controller
 
         $this->lang->load('auth');
         $this->output->set_template('auth');
+    }
+
+    private function checkBrowser()
+    {
+        $this->load->library('user_agent');
+
+        $check_browser = FALSE;
+
+        $chrome_ver = $this->config->item('Chrome');
+        $ie_ver = $this->config->item('IE');
+        $spartan_ver = $this->config->item('Spartan');
+        $firefox_ver = $this->config->item('Firefox');
+
+        if ($this->agent->is_browser())
+        {
+            if ($this->agent->browser() === 'Internet Explorer' && $this->agent->version() >= $ie_ver)
+            {
+                $check_browser = TRUE;
+            }
+            else if ($this->agent->browser() === 'Chrome' && $this->agent->version() >= $chrome_ver)
+            {
+                $check_browser = TRUE;
+            }
+            else if ($this->agent->browser() === 'Spartan' && $this->agent->version() >= $spartan_ver) //16
+            {
+                $check_browser = TRUE;
+            }
+            else if ($this->agent->browser() === 'Firefox' && $this->agent->version() >= $firefox_ver) //58
+            {
+                $check_browser = TRUE;
+            }
+        }
+        elseif ($this->agent->is_mobile())
+        {
+            $this->check_browser = TRUE;
+        }
+        return $check_browser;
     }
 
     /**
@@ -44,7 +87,7 @@ class Auth extends CI_Controller
                 //if the login is successful
                 //redirect them back to the home page
                 $this->session->set_flashdata('message', $this->ion_auth->messages());
-                redirect('home', 'refresh');
+                redirect('admin/dashboard', 'refresh');
             }
             else
             {

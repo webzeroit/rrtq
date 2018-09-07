@@ -5,7 +5,10 @@
  *  */
 
 $lang['o_save_profilo']             = 'Nuova qualificazione';
-$lang['m_save_profilo']             = '%1$s ha aggiunto al repertorio:<br><b> %2$s </b><br/>';
+$lang['m_save_profilo']             = '%1$s ha aggiunto la qualificazione:<br><b> %2$s </b><br/>';
+
+$lang['o_save_standard_formativo']  = 'Nuovo standard formativo';
+$lang['m_save_standard_formativo']  = '%1$s ha aggiunto lo standard formativo:<br><b> %2$s </b><br/>';
 
 $lang['o_setta_revisione_profili']  = 'Qualificazione in revisione';
 $lang['m_setta_revisione_profili']  = '%1$s ha avviato la revisione per:<br><b> %2$s </b><br/>';
@@ -24,3 +27,6 @@ $lang['m_sospendi_pubblicazione']   = '%1$s ha sospeso la pubblicazione per:<br>
 
 $lang['o_elimina_pubblicazione']    = 'Qualificazione eliminata';
 $lang['m_elimina_pubblicazione']    = '%1$s ha eliminato:<br><b> %2$s </b><br/>';
+
+$lang['o_ripristina_pubblicazione']    = 'Qualificazione ripristinata:';
+$lang['m_ripristina_pubblicazione']    = '%1$s ha ripristinato a seguito cancellazione:<br><b> %2$s </b><br/>';

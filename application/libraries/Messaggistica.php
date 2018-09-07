@@ -8,7 +8,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Description of Message
+ * Classe responsabile della gestione della Messaggistica interna
  *
  * @author rlanz
  */
@@ -44,6 +44,11 @@ class Messaggistica
                 $oggetto = $this->lang->line('o_save_profilo');
                 $messaggio = $this->lang->line('m_save_profilo');
                 break;
+            case "save_standard_formativo":
+                $groupId_to = 4;
+                $oggetto = $this->lang->line('o_save_standard_formativo');
+                $messaggio = $this->lang->line('m_save_standard_formativo');
+                break;
             case "setta_revisione_profili":
                 $groupId_to = 4;
                 $oggetto = $this->lang->line('o_setta_revisione_profili');
@@ -74,6 +79,11 @@ class Messaggistica
                 $oggetto = $this->lang->line('o_elimina_pubblicazione');
                 $messaggio = $this->lang->line('m_elimina_pubblicazione');
                 break;
+            case "ripristina_pubblicazione":
+                $groupId_to = array(2, 3);
+                $oggetto = $this->lang->line('o_ripristina_pubblicazione');
+                $messaggio = $this->lang->line('m_ripristina_pubblicazione');
+                break;            
         }
 
         $users_to = $this->ion_auth->where('active', 1)->users($groupId_to)->result();

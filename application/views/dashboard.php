@@ -90,14 +90,14 @@ foreach ($indicatori_stato as $stato)
 
 
 <div class="row">
-    <div class="col-lg-6 col-md-5">
+    <div class="col-lg-9 col-md-12">
         <div class="card card-default">
             <div class="card-header">
                 <div class="card-actions">
                     <a class="" data-action="collapse"><i class="ti-minus"></i></a>
                     <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
                 </div>                
-                <h4 class="card-title m-b-0">Stato Qualificazioni</h4>
+                <h4 class="card-title m-b-0"><i class="mdi mdi-chart-line"> </i> Stato Qualificazioni</h4>
             </div>
             <div class="card-body collapse show">
                 <div id="morris-donut-chart" class="ecomm-donute" ></div>
@@ -122,37 +122,47 @@ foreach ($indicatori_stato as $stato)
 
             </div>
         </div>        
-    </div>
-    <div class="col-lg-6 col-md-5">
-        <div class="card card-default">
-            <div class="card-header">
-                <div class="card-actions">
-                    <a class="" data-action="collapse"><i class="ti-minus"></i></a>
-                    <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
-                </div>                
-                <h4 class="card-title m-b-0">Ultime qualificazioni esportate per INAPP</h4>                
-            </div>
-            <div class="card-body collapse show">
-                <div class="table-responsive">                    
-                    <table class="table table-hover ">
-                        <thead>
-                            <tr>
-                                <th>Qualificazione</th>
-                                <th class="text-center">Data/Ora</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($ultimi_export as $qual): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($qual['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                    <td class="text-center"><?php echo convertsDataOraInItalianFormat($qual['data_ultimo_export']); ?></td>                                   
-                                </tr>
-                            <?php endforeach; ?>      
-                        </tbody>
-                    </table>
+    </div>    
+    <div class="col-lg-3 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-10">
+                        <h1 class=""><?php echo $n_standard_formativi; ?></h1>
+                        <h6>Standard Formativi</h6>
+                    </div>
+                    <div class="col-2 align-self-center text-right  p-l-0">
+                        <h2 class="m-b-0"><i class="mdi mdi-presentation text-info"></i></h2>
+                    </div>                    
                 </div>
             </div>
-        </div>             
+        </div>    
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-10">
+                        <h1 class=""><?php echo $n_unita_formative; ?></h1>
+                        <h6>Unità Formative</h6>
+                    </div>
+                    <div class="col-2 align-self-center text-right  p-l-0">
+                        <h2 class="m-b-0"><i class="mdi mdi-book-open-page-variant text-muted"></i></h2>
+                    </div>                    
+                </div>
+            </div>
+        </div>    
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-10">
+                        <h1 class=""><?php echo $n_moduli; ?></h1>
+                        <h6>Moduli</h6>
+                    </div>
+                    <div class="col-2 align-self-center text-right  p-l-0">
+                        <h2 class="m-b-0"><i class="mdi mdi-book text-danger"></i></h2>
+                    </div>                    
+                </div>
+            </div>
+        </div>        
     </div>        
 </div> 
 
@@ -161,12 +171,12 @@ foreach ($indicatori_stato as $stato)
         <div class="card card-default">
             <div class="card-header">
                 <div class="card-actions">
-                    <a class="" data-action="collapse"><i class="ti-minus"></i></a>
+                    <a class="" data-action="collapse"><i class="ti-plus"></i></a>
                     <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
                 </div>                
-                <h4 class="card-title m-b-0">Ultime 10 qualificazioni modificate</h4>                
+                <h4 class="card-title m-b-0"><i class="mdi mdi-certificate"> </i> Ultime 10 qualificazioni modificate</h4>                
             </div>
-            <div class="card-body collapse show">
+            <div class="card-body collapse">
                 <div class="table-responsive">                    
                     <table class="table table-hover" width="100%">
                         <thead>
@@ -179,11 +189,11 @@ foreach ($indicatori_stato as $stato)
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($ultime_modifiche as $qual_mod): ?>
+                            <?php foreach ($ultime_modifiche_sp as $qual_mod): ?>
                                 <tr>
                                     <td class="text-center" width="5%"><?php echo $qual_mod['id_sep']; ?></td>
                                     <td width="60%"><?php echo htmlspecialchars($qual_mod['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                    <td width="15%"><?php echo convertsDataOraInItalianFormat($qual_mod['data_ultima_modifica']); ?></td>
+                                    <td width="15%"><?php echo $qual_mod['data_ultima_modifica']; ?></td>
                                     <td class="text-center" width="15%">
                                     <?php 
                                     $stato = '';
@@ -212,11 +222,115 @@ foreach ($indicatori_stato as $stato)
                         </tbody>
                     </table>
                 </div>
+                <div class="button-group text-right m-t-10">                    
+                    <a href="dashboard/export_xls/qual" role="button" id="btn_export_q" name="btn_export_q" class="btn btn-sm btn-info">Esporta in Excel</a>      
+                </div>
             </div>
         </div>             
     </div>              
 </div>
 
+<div class="row">
+    <div class="col-12">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="card-actions">
+                    <a class="" data-action="collapse"><i class="ti-plus"> </i></a>
+                    <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
+                </div>                
+                <h4 class="card-title m-b-0"><i class="mdi mdi-presentation"></i> Ultimi 10 standard formativi modificati</h4>                
+            </div>
+            <div class="card-body collapse">
+                <div class="table-responsive">                    
+                    <table class="table table-hover" width="100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.E.P.</th>
+                                <th>Standard Formativo</th>
+                                <th>Data/Ora</th>
+                                <th class="text-center">Stato</th>
+                                <th class="text-center">Azione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($ultime_modifiche_sf as $sf_mod): ?>
+                                <tr>
+                                    <td class="text-center" width="5%"><?php echo $sf_mod['id_sep']; ?></td>
+                                    <td width="60%"><?php echo htmlspecialchars($sf_mod['des_standard_formativo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td width="15%"><?php echo $sf_mod['data_ultima_modifica']; ?></td>
+                                    <td class="text-center" width="15%">
+                                    <?php 
+                                    $stato = '';
+                                    if (intval($sf_mod['id_stato_profilo']) === 0)
+                                        $stato = '<span class="label label-info">' . $sf_mod['des_stato_profilo'] . '</span>';                                    
+                                    if (intval($sf_mod['id_stato_profilo']) === 1)
+                                        $stato = '<span class="label label-success">' . $sf_mod['des_stato_profilo'] . '</span>';
+                                    else if (intval($sf_mod['id_stato_profilo']) === 2)
+                                        $stato  = '<span class="label label-warning">' . $sf_mod['des_stato_profilo'] . '</span>';
+                                    else if (intval($sf_mod['id_stato_profilo']) === 3)
+                                        $stato = '<span class="label label-danger">' . $sf_mod['des_stato_profilo'] .  '</span>';
+                                    else if (intval($sf_mod['id_stato_profilo']) === 4)
+                                        $stato = '<span class="label label-inverse">' . $sf_mod['des_stato_profilo'] . '</span>';
+                                    
+                                    echo $stato; 
+                                    ?>
+                                    </td>
+                                    <td class="text-center" width="5%">
+                                    <?php 
+                                        $action_link = '<a href="' . base_url() .'admin/standardformativo/gestione/' . $sf_mod['id_standard_formativo'] . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
+                                        echo $action_link; 
+                                    ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-group text-right m-t-10">                    
+                    <a href="dashboard/export_xls/stfor" role="button" id="btn_export_sf" name="btn_export_sf" class="btn btn-sm btn-info">Esporta in Excel</a>      
+                </div>                
+            </div>
+        </div>             
+    </div>              
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="card-actions">
+                    <a class="" data-action="collapse"><i class="ti-plus"></i></a>
+                    <a class="btn-minimize" data-action="expand"><i class="mdi mdi-arrow-expand"></i></a>
+                </div>                
+                <h4 class="card-title m-b-0"><i class="mdi mdi-file-export"> </i> Ultime 10 qualificazioni esportate per INAPP</h4>                
+            </div>
+            <div class="card-body collapse">
+                <div class="table-responsive">                    
+                    <table class="table table-hover ">
+                        <thead>
+                            <tr>
+                                <th class="text-center">S.E.P.</th>
+                                <th>Qualificazione</th>
+                                <th class="text-center">Data/Ora Export</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($ultimi_export as $qual): ?>
+                                <tr>
+                                    <td class="text-center" width="5%"><?php echo $qual['id_sep']; ?></td>
+                                    <td width="75%"><?php echo htmlspecialchars($qual['titolo_profilo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td class="text-center" width="20%"><?php echo $qual['data_ultimo_export']; ?></td>                                   
+                                </tr>
+                            <?php endforeach; ?>      
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-group text-right m-t-10">                    
+                    <a href="dashboard/export_xls/inapp" role="button" id="btn_export_in" name="btn_export_in" class="btn btn-sm btn-info">Esporta in Excel</a>      
+                </div>                 
+            </div>
+        </div>             
+    </div>              
+</div>
 
 <script>
     $(function () {

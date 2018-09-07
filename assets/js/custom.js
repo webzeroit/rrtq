@@ -31,9 +31,9 @@ $(function () {
             e = e.parent().addClass("in").parent().addClass("active")
         }
     }), $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'})
     }), $(function () {
-        $('[data-toggle="popover"]').popover()
+        $('[data-toggle="popover"]').popover({trigger : 'hover'})
     }), $(function () {
         $("#sidebarnav").metisMenu()
     }), $(".message-center").slimScroll({

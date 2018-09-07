@@ -8,7 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 
 /**
- * Description of Message_model
+ * Classe responsabile della gestione della tabella sys_message
  *
  * @author rlanz
  */

@@ -35,7 +35,9 @@ class UnitaCompetenza extends MY_Controller_Admin
             $data = array(
                 'action' => "add",
                 'competenza' => NULL,
-                'id_competenza' => $id_competenza
+                'id_competenza' => $id_competenza,
+                'list_abilita' => NULL,
+                'list_conoscenza' => NULL
             );
         }
         else

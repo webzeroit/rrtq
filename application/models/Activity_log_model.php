@@ -61,7 +61,11 @@ class Activity_log_model extends CI_Model
             case 'revision_ok':
                 $username = $this->ion_auth->user()->row()->username;
                 $msg = "{$username} ha approvato le revisioni id {$arr['id']} dalla tabella {$arr['table']}";
-                break;            
+                break;   
+            case 'restore_ok':
+                $username = $this->ion_auth->user()->row()->username;
+                $msg = "{$username} ha ripristinato id {$arr['id']} dalla tabella {$arr['table']}";
+                break;              
         }
         $data = array(
             'action' => $action,

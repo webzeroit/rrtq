@@ -22,12 +22,11 @@ if (!function_exists('dt_profilo_action'))
         if ($stato != 4)
         {
             $action_link = '<a href="qualificazione/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-            $action_link .= '<a href="../public/GeneraPDF/' . $id . '" target="_blank" data-toggle="tooltip" data-original-title="Scarica PDF"><i class="fa fa-file-pdf-o text-inverse m-r-5"></i></a>';
+            $action_link .= '<a href="'. base_url() . 'public/stampa/sp/' . $id . '" target="_blank" data-toggle="tooltip" data-original-title="PDF Pubblico"><i class="fa fa-file-pdf-o text-inverse m-r-5"></i></a>';
         }
         //SE PUBBLICATO 
         /* GESTIONE RUOLI */
-        if ($ci->ion_auth->is_admin() || 
-            $ci->ion_auth->in_group($ci->config->item('role_responsabile')) 
+        if ($ci->ion_auth->is_admin() || $ci->ion_auth->in_group($ci->config->item('role_responsabile'))
         )
         {
             if ($stato == 0)
@@ -38,27 +37,26 @@ if (!function_exists('dt_profilo_action'))
             if ($stato == 1)
             {
                 $action_link .= '<a href="javascript:avvia_pubblicazione(' . $id . ');" data-toggle="tooltip" data-original-title="Pubblica"><i class="fa fa-globe text-inverse m-r-5"></i></a>';
-            }           
+            }
             //NON PUBBLICATO
             if ($stato == 3)
             {
                 $action_link .= '<a href="javascript:avvia_pubblicazione(' . $id . ');" data-toggle="tooltip" data-original-title="Pubblica"><i class="fa fa-globe text-inverse m-r-5"></i></a>';
             }
             //SE NON CANCELLATO
-            if ($stato != 4)
+            if ($stato < 3)
             {
                 $action_link .= '<a href="javascript:elimina_pubblicazione(' . $id . ');" data-toggle="tooltip" data-original-title="Elimina"><i class="fa fa-close text-danger m-r-5"></i></a>';
             }
         }
-        if ($ci->ion_auth->is_admin() || 
-            $ci->ion_auth->in_group($ci->config->item('role_supervisore')))
+        if ($ci->ion_auth->is_admin() || $ci->ion_auth->in_group($ci->config->item('role_supervisore')))
         {
             //SE REVISIONE LA PUO' APPROVARE
             if ($stato == 2)
-            {                
+            {
                 $action_link .= '<a href="javascript:approva_revisione(' . $id . ');" data-toggle="tooltip" data-original-title="Approva Revisione"><i class="fa fa-check-square-o text-inverse m-r-5"></i></a>';
-            }  
-         }
+            }
+        }
         if ($ci->ion_auth->is_admin())
         {
             if ($stato == 4)
@@ -79,10 +77,10 @@ if (!function_exists('dt_uc_action'))
     {
         $ci = & get_instance();
         $action_link = '<a href="unitacompetenza/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-        
-        if ($ci->ion_auth->is_admin() || 
-            $ci->ion_auth->in_group($ci->config->item('role_responsabile')) || 
-            $ci->ion_auth->in_group($ci->config->item('role_supervisore'))                    
+
+        if ($ci->ion_auth->is_admin() ||
+                $ci->ion_auth->in_group($ci->config->item('role_responsabile')) ||
+                $ci->ion_auth->in_group($ci->config->item('role_supervisore'))
         )
         {
             if ($profili_associati == 0)
@@ -95,7 +93,6 @@ if (!function_exists('dt_uc_action'))
 
 }
 
-
 if (!function_exists('dt_abilita_action'))
 {
 
@@ -103,10 +100,10 @@ if (!function_exists('dt_abilita_action'))
     {
         $ci = & get_instance();
         $action_link = '<a href="abilita/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-        
-        if ($ci->ion_auth->is_admin() || 
-            $ci->ion_auth->in_group($ci->config->item('role_responsabile')) || 
-            $ci->ion_auth->in_group($ci->config->item('role_supervisore'))                    
+
+        if ($ci->ion_auth->is_admin() ||
+                $ci->ion_auth->in_group($ci->config->item('role_responsabile')) ||
+                $ci->ion_auth->in_group($ci->config->item('role_supervisore'))
         )
         {
             if ($competenze_associate == 0)
@@ -126,16 +123,40 @@ if (!function_exists('dt_conoscenza_action'))
     {
         $ci = & get_instance();
         $action_link = '<a href="conoscenza/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-        
-        if ($ci->ion_auth->is_admin() || 
-            $ci->ion_auth->in_group($ci->config->item('role_responsabile')) || 
-            $ci->ion_auth->in_group($ci->config->item('role_supervisore'))                    
+
+        if ($ci->ion_auth->is_admin() ||
+                $ci->ion_auth->in_group($ci->config->item('role_responsabile')) ||
+                $ci->ion_auth->in_group($ci->config->item('role_supervisore'))
         )
         {
             if ($competenze_associate == 0)
             {
                 $action_link .= '<a href="javascript:elimina_conoscenza(' . $id . ');" data-toggle="tooltip" data-original-title="Elimina"><i class="fa fa-close text-danger m-r-5"></i></a>';
             }
+        }
+        return $action_link;
+    }
+
+}
+
+if (!function_exists('dt_standard_formativo_action'))
+{
+
+    function dt_standard_formativo_action($id)
+    {
+        $ci = & get_instance();
+        $action_link = '';
+
+        $action_link = '<a href="' . base_url() . 'admin/standardformativo/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
+        $action_link .= '<a href="'. base_url() . 'public/stampa/sf/' . $id . '" target="_blank" data-toggle="tooltip" data-original-title="PDF Pubblico"><i class="fa fa-file-pdf-o text-inverse m-r-5"></i></a>';
+
+        //SE PUBBLICATO 
+        /* GESTIONE RUOLI */
+        if ($ci->ion_auth->is_admin() ||
+                $ci->ion_auth->in_group($ci->config->item('role_responsabile')) ||
+                $ci->ion_auth->in_group($ci->config->item('role_supervisore')))
+        {
+            $action_link .= '<a href="javascript:del_standard(' . $id . ');" data-toggle="tooltip" data-original-title="Elimina"><i class="fa fa-close text-danger m-r-5"></i></a>';
         }
         return $action_link;
     }

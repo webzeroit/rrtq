@@ -32,6 +32,9 @@ class Export extends MY_Controller_Admin
             {
                 $lista_id = $this->input->post("id_profilo");
                 $this->genera_file_atlante($lista_id);
+            } else 
+            {
+                redirect('admin/export');
             }
         }
         else

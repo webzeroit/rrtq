@@ -35,7 +35,9 @@
                 <h3 class="text-uppercase"><?php echo $heading; ?></h3>                
                 <p class="text-muted m-t-30 m-b-30"><?php echo $message; ?></p>
                 <a href="<?php echo config_item('base_url') ?>" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Torna alla Home</a> </div>
-                <footer class="footer">© <?php echo date("Y"); ?> Piattaforma CAPIRE</footer>
+                <footer class="footer">
+                    Regione Campania - © <?php echo date("Y"); ?> Piattaforma CAPIRE
+                </footer>
         </div>
     </section>
     <!-- ============================================================== -->

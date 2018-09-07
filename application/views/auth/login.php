@@ -5,7 +5,7 @@
         $attributes = array('class' => 'form-horizontal form-material', 'id' => 'loginform');
         echo form_open('auth/login', $attributes);
         ?>
-        <h3 class="box-title m-b-20"><?php echo lang('login_heading'); ?></h3>
+        <h3 class="box-title m-b-20">LOGIN</h3>
 
         <?php if (isset($message))
         { ?>
@@ -38,7 +38,18 @@
                     <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit"><?php echo lang('login_submit_btn'); ?></button>
                 </div>
             </div>
-        </div>                
-<?php echo form_close(); ?>
+        </div>         
+        <div class="form-group m-b-0">
+
+            <div class="col-sm-12 text-justify">
+                <h6>L'accesso non autorizzato a questo sistema è proibito.
+                    I trasgressori sono perseguibili ai sensi della legge 547/93.</h6>
+            </div>  
+            <div class="col-sm-12 text-center">
+                <a href="<?php echo base_url() ?>" class="text-info"><b>Torna al portale</b></a>
+            </div>            
+        </div>        
+        <?php echo form_close(); ?>
+        
     </div>
 </div>
