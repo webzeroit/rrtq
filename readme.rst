@@ -39,6 +39,6 @@ La piattaforma nel suo complesso (servizi, dati e connessioni) sarà identificat
 ==============================
 Server Requirements
 ==============================
-PHP 5.6 
-CodeIgniter Framework 3.1.9
-MySQL 5.5
+- PHP 5.6 
+- CodeIgniter Framework 3.1.9
+- MySQL 5.5
