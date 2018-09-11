@@ -1,70 +1,44 @@
-###################
-What is CodeIgniter
-###################
+============
+PREMESSA
+============
+Le Qualificazioni contenute nel Repertorio Regionale dei Titoli e delle Qualificazioni (RRTQ) costituiscono il riferimento primario per la programmazione dell'offerta formativa regionale finalizzata ad accrescere le competenze Tecnico-Professionali sia dei soggetti disoccupati/inoccupati che dei soggetti occupati residenti nel territorio regionale. Al fine del riconoscimento e della spendibilità, sia sul territorio italiano che dei paesi dell’Unione Europea, le Qualificazioni sono importate nel `Quadro Nazionale delle Qualificazioni Regionali (QNQR) <http://atlantelavoro.inapp.org/repertorio_nazionale_qualificazioni.php>`_
+, ai sensi dell'art. **8 del D.Lgs. n.13 del 16 gennaio 2013**.
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
+Il Repertorio è oggetto di continuo aggiornamento, adeguamento e sviluppo, con riferimento ad ognuna delle sue componenti (Standard Tecnico-Professionale comprendente le referenziazioni, descrizione del profilo, unità di competenza articolate in conoscenze, abilità/capacità, risultato atteso; Standard Formativi di dettaglio, ecc.), nel rispetto dei principi di interesse pubblico, trasparenza, efficienza e supporto alle politiche di sviluppo economico e di inclusione sociale.
 
-*******************
-Release Information
-*******************
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+========================
+RIFERIMENTI NORMATIVI
+========================
 
-**************************
-Changelog and New Features
-**************************
+LEGGE N. 92/2012
+^^^^^^^^^^^^^^^^^
+Disposizioni in materia di riforma del mercato del lavoro in una prospettiva di crescita. (12G0115).
 
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
+DECRETO LEGISLATIVO N. 13 DEL 16/01/2013
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Definizione delle norme generali e dei livelli essenziali delle prestazioni per l'individuazione e validazione degli apprendimenti non formali e informali e degli standard minimi di servizio del sistema nazionale di certificazione delle competenze, a norma dell'articolo 4, commi 58 e 68, della legge 28 giugno 2012, n. 92. (13G00043)
 
-*******************
+DECRETO INTERMINISTERIALE 30 GIUGNO 2015 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Definizione di un quadro operativo per il riconoscimento a livello nazionale delle qualificazioni regionali e delle relative competenze, nell'ambito del Repertorio nazionale dei titoli di istruzione e formazione e delle qualificazioni professionali di cui all'articolo 8 del decreto legislativo 16 gennaio 2013, n. 13*
+
+DELIBERA DELLA GIUNTA REGIONALE N. 314 DEL 28/06/2016
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RIFORMA DEL SISTEMA DELLA FORMAZIONE PROFESSIONALE - APPROVAZIONE DISPOSITIVO INTEGRATO SCRIVERE - SISTEMA DI CERTIFICAZIONE REGIONALE DI INDIVIDUAZIONE VALIDAZIONE E RICONOSCIMENTO DELLE ESPERIENZE. RECEPIMENTO DECRETO M.L.P.S. 30 GIUGNO 2015
+
+
+==============================
+ESIGENZE DI INFORMATIZZAZIONE
+==============================
+L'esigenza prioritaria è quella di utilizzare, per la manutenzione del repertorio delle qualificazioni regionali, un sistema informativo dinamico che faciliti l’aggiornamento, l’adeguamento e lo sviluppo delle qualificazioni e la sua corretta sincronizzazione con il QNQR e di ridurre la frammentazione delle informazioni connesse alla banca dati delle qualificazioni creando un “entry-point” unico per la consultazione pubblica delle risultanze di tale processo e favorire l’interoperabilità con altri sistemi.
+
+La piattaforma nel suo complesso (servizi, dati e connessioni) sarà identificata con la dicitura “CAPIRE” – Competenze e Apprendimento Permanente in Regione Campania.
+
+
+==============================
 Server Requirements
-*******************
-
-PHP version 5.6 or newer is recommended.
-
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
-
-************
-Installation
-************
-
-Please see the `installation section <https://codeigniter.com/user_guide/installation/index.html>`_
-of the CodeIgniter User Guide.
-
-*******
-License
-*******
-
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
-
-*********
-Resources
-*********
-
--  `User Guide <https://codeigniter.com/docs>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community Slack Channel <https://codeigniterchat.slack.com>`_
-
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
-
-***************
-Acknowledgement
-***************
-
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+==============================
+PHP 5.6 
+CodeIgniter Framework 3.1.9
+MySQL 5.5
