@@ -45,7 +45,7 @@
                                 }
                                 ?>
                             </select>  
-                            <small class="form-control-feedback">Sono esportabili solo le qualificazioni che si trovano nello stato <span class="text-info">Pubblicato</span></small>
+                            <small class="form-control-feedback">Sono esportabili solo le qualificazioni che si trovano nello stato <span class="text-info">Pubblicato</span> e <span class="text-success">Revisioni Validate</span></small>
                         </div>
                     </div>  
                     <div class="text-xs-right">
