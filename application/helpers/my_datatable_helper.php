@@ -77,7 +77,8 @@ if (!function_exists('dt_uc_action'))
     {
         $ci = & get_instance();
         $action_link = '<a href="unitacompetenza/gestione/' . $id . '" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
-
+        $action_link .= '<a href="'. base_url() . 'admin/unitacompetenza/stampa/' . $id . '" target="_blank" data-toggle="tooltip" data-original-title="Stampa UC"><i class="fa fa-file-pdf-o text-inverse m-r-5"></i></a>';
+        
         if ($ci->ion_auth->is_admin() ||
                 $ci->ion_auth->in_group($ci->config->item('role_responsabile')) ||
                 $ci->ion_auth->in_group($ci->config->item('role_supervisore'))

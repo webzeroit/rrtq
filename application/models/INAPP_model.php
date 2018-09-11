@@ -103,7 +103,7 @@ class INAPP_model extends MY_Model
         {
             $ids = array($ids);
         }
-        
+        $this->db->set('data_ultima_modifica', 'data_ultima_modifica', FALSE);
         $this->db->set('data_ultimo_export', 'NOW()', FALSE);  
         $this->db->where_in('id_profilo', $ids);
         $output = $this->db->update('rrtq_profilo');

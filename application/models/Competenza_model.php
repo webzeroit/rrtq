@@ -12,7 +12,8 @@ class Competenza_model extends MY_Model
 
     public function list_competenza()
     {
-        $this->db->select('id_competenza, titolo_competenza, descrizione_competenza, risultato_competenza, oggetto_di_osservazione, indicatori, livello_eqf');
+        //$this->db->select('id_competenza, titolo_competenza, descrizione_competenza, risultato_competenza, oggetto_di_osservazione, indicatori, livello_eqf');
+        $this->db->select('id_competenza, titolo_competenza');
         $this->db->from('rrtq_competenza');
         $query = $this->db->get();
         return $query->result_array();
@@ -175,6 +176,22 @@ class Competenza_model extends MY_Model
             }
         }
     }
+    
+    
+    public function list_competenza_profili($id_competenza)
+    {
+        $this->db
+                ->select('rrtq_profilo.id_profilo,id_sep,titolo_profilo,flg_regolamentato,rrtq_profilo.id_stato_profilo')
+                ->from('rrtq_profilo')
+                ->join('rrtq_stato_profilo', 'rrtq_profilo.id_stato_profilo = rrtq_stato_profilo.id_stato_profilo')
+                ->select('des_stato_profilo')
+                ->join('rrtq_profilo_competenza', 'rrtq_profilo.id_profilo = rrtq_profilo_competenza.id_profilo')
+                ->where('id_competenza', $id_competenza);
+        
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    
 
     /* TABELLA DELLE COMPETENZE */
 

@@ -20,7 +20,7 @@
                 </div> 
                 <div class="button-group">                    
                     <a href="activitylog/export_xls" role="button" id="btn_export" name="btn_export" class="btn btn-info">Esporta in Excel</a>
-                    <button id="btn_delete_log" name="btn_delete_log" type="button" class="btn waves-effect waves-light btn-danger">Cancella Log</button>
+                    <!--button id="btn_delete_log" name="btn_delete_log" type="button" class="btn waves-effect waves-light btn-danger">Cancella Log</button-->
                 </div>                  
             </div>
         </div>  

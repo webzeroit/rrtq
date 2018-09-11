@@ -94,6 +94,7 @@ class Profilo_model extends MY_Model
                 ->where('id_profilo', $id_profilo);
 
         $action_link = '<a href="' . base_url() . 'admin/unitacompetenza/gestione/$1" data-toggle="tooltip" data-original-title="Gestione"> <i class="fa fa-edit text-inverse m-r-5"></i> </a>';
+        $action_link .= '<a href="'. base_url() . 'admin/unitacompetenza/stampa/$1" target="_blank" data-toggle="tooltip" data-original-title="Stampa UC"><i class="fa fa-file-pdf-o text-inverse m-r-5"></i></a>';
         $action_link .= '<a href="javascript:del_competenza($1);" data-toggle="tooltip" data-original-title="Dissocia"><i class="fa fa-chain-broken text-danger m-r-5"></i></a>';
 
         $this->datatables->add_column('azione', $action_link, 'id_competenza');
@@ -449,6 +450,17 @@ class Profilo_model extends MY_Model
         }
         /* END MESSAGES */
         return TRUE;
+    }
+    
+        
+    public function revisione_completa($id)
+    {
+        $ret = FALSE;
+        if ($this->config->item('enable_messages'))
+        {
+           $ret = $this->messaggistica->invia_messaggio('revisione_completa', $this->get_titoli_profilo($id));
+        } 
+        return $ret;
     }
 
     public function restore_profilo($id)

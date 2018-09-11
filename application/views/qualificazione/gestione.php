@@ -277,6 +277,9 @@
                         <div class="button-group">
                             <a href="<?php echo base_url('/public/stampa/sp/' . $id_profilo . '/1') ?>" target="_blank" class="btn btn-outline-info">Genera PDF</a>
                             <a href="<?php echo base_url('/admin/qualificazione/difftool/' . $id_profilo) ?>" target="_blank" class="btn btn-outline-info">Lancia Diff Checker</a>
+                            <?php  if ($this->config->item('enable_messages')) { ?>
+                                <a href="javascript:revisione_completa( <?php echo $id_profilo ?>)" class="btn btn-outline-info">Revisione completata</a>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -716,4 +719,37 @@
             $('#q_tools').show();
         
     }
+    
+    function revisione_completa(id)
+    {
+        swal({
+            title: "Hai completato la revisione?",
+            text: "Verrà inviato un messaggio al Supervisore che potrà procedere alla validazione.",
+            type: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Si",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                //PROSEGUI		
+                var id_profilo = $("input[name='id_profilo']").val();                
+                $.ajax({
+                    type: 'POST',
+                    url: baseURL + 'admin/qualificazione/revisione_completa_json',
+                    cache: false,
+                    data: {id_profilo: id_profilo},
+                    success: function (data) {
+                        swal("Invio messaggio", data.message, data.esito);
+                    },
+                    error: function () {                        
+                        swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+                    }
+                });
+            }
+        });
+    }
+    
 </script>
