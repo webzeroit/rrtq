@@ -13,6 +13,13 @@
                         <div class="col-md-6">
                             <p id="count_export" class="form-control-static text-left font-weight-bold">0</p>
                         </div>
+                    </div>             
+                    <div id="id_revisione" class="form-group m-t-30 m-b-40" style="display:none" >
+                        <h5>Elenco dei profili contenuti nella lista di esportazione con <span class="text-success">Revisioni Validate</span></h5>
+                        <div class="controls">
+                            <ul id="list_revisione" class="list-group">
+                            </ul>
+                        </div>
                     </div>                    
                     <div class="form-group">
                         <h5>Settore Economico Professionale</h5>
@@ -29,7 +36,7 @@
                                 }
                                 ?>
                             </select>
-                            <small class="form-control-feedback">Aggiunge alla lista le qualificazioni afferenti al S.E.P. selezionato</small>
+                            <small class="form-control-feedback">Aggiunge alla lista le qualificazioni afferenti al S.E.P. selezionato. ATTENZIONE! Cambiando il S.E.P. le qualificazioni già presenti verranno rimosse dalla lista</small>
                         </div>
                     </div> 
                     <div class="form-group">
@@ -48,7 +55,7 @@
                             <small class="form-control-feedback">Sono esportabili solo le qualificazioni che si trovano nello stato <span class="text-info">Pubblicato</span> e <span class="text-success">Revisioni Validate</span></small>
                         </div>
                     </div>  
-                    <div class="text-xs-right">
+                    <div class="text-xs-right m-t-40">
                         <button type="submit" class="btn btn-info">Genera file</button>
                     </div>                       
                 </form>                
@@ -62,13 +69,14 @@
         var std_options_multi = {
             language: "it",
             placeholder: "",
-            allowClear: true
+            allowClear: false
         };
         if ($.fn.select2) {
-            $(".select2-multiple").select2(std_options_multi);
+            $(".select2-multiple").select2(std_options_multi)
         }
         $("#id_profilo").on("change", function () {
-            $("#count_export").html(($("#id_profilo").find(':selected').length));
+            $("#count_export").html(($("#id_profilo").find(':selected').length));   
+            verifica();
         });
 
         $("#id_sep").change(function () {
@@ -82,6 +90,12 @@
                     data: {id_sep: curr_sep},
                     success: function (data) {
                         $("#id_profilo").val(data).trigger("change");
+                        $("#id_profilo").trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: data
+                            }
+                        });
                     },
                     error: function () {
                         swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
@@ -90,5 +104,31 @@
             }
         });
     });
-
+    
+    
+function verifica()
+{
+    $.ajax({
+        type: 'POST',
+        url: baseURL + 'admin/export/get_profili_validati_json',
+        cache: false,
+        async: false,
+        data: {id_profilo: $("#id_profilo").val()},
+        success: function (data) {
+            $("#id_revisione").hide();
+            if (data.length > 0)
+            {
+                $("#id_revisione").show();
+                var lista = "";
+                $.each(data, function (idx, obj) {
+                    lista += '<li class="list-group-item" id="'+ obj.id_profilo +'">' + obj.titolo_profilo  + '</li>';
+                });
+                $("#list_revisione").html(lista);
+            }           
+        },
+        error: function () {
+            swal('Attenzione', 'Si sono verificati degli errori nel gestire la richiesta', 'error');
+        }
+    });
+}
 </script>

@@ -32,7 +32,8 @@ class Export extends MY_Controller_Admin
             {
                 $lista_id = $this->input->post("id_profilo");
                 $this->genera_file_atlante($lista_id);
-            } else 
+            }
+            else
             {
                 redirect('admin/export');
             }
@@ -50,7 +51,6 @@ class Export extends MY_Controller_Admin
             $this->output->set_title("Interscambio dati ATLANTE");
             $this->load->view('export/atlante', $data);
         }
-        
     }
 
     public function genera_file_atlante($ids)
@@ -120,6 +120,7 @@ class Export extends MY_Controller_Admin
     }
 
     /* AJAX CALL */
+
     public function get_profili_sep_json()
     {
         if (!$this->input->is_ajax_request())
@@ -137,6 +138,26 @@ class Export extends MY_Controller_Admin
             $output[] = $value['id_profilo'];
         }
 
+        $this->_render_json($output);
+    }
+
+    public function get_profili_validati_json()
+    {
+        if (!$this->input->is_ajax_request())
+        {
+            exit('No direct script access allowed');
+        }
+        if ($this->input->post('id_profilo'))
+        {
+            $lista_id = $this->input->post("id_profilo");
+
+            $this->db->select('id_profilo,titolo_profilo');
+            $this->db->where('id_stato_profilo', 1);
+            $this->db->where_in('id_profilo', $lista_id);
+            $this->db->from('rrtq_profilo');
+            $query = $this->db->get();
+            $output = $query->result_array();
+        }
         $this->_render_json($output);
     }
 
