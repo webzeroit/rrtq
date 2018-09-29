@@ -791,7 +791,7 @@ class Stampa extends CI_Controller
                     <td>' . $uf["ore_min_durata_uf"] . '</td>
                 </tr>       
                 <tr>
-                    <td  class="titolo"><b>Percentuale di variazione consentita in aumento e/o diminuzione della durata minima dell\'UF</b></td>
+                    <td  class="titolo"><b>Percentuale di variazione massima consentita in aumento e/o diminuzione della durata minima dell\'UF</b></td>
                     <td>' . $uf["perc_varianza"] . '%</td>
                 </tr>   
                 <tr>

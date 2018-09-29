@@ -253,7 +253,7 @@
                                     <div class="col-md-12">
                                         <input type="number" id="perc_varianza" name="perc_varianza" class="form-control">  
                                     </div>  
-                                    <div class="form-control-feedback col-md-12"><small><i>% di variazione consentita in aumento e/o diminuzione della durata minima dell'UF</i></small></div>
+                                    <div class="form-control-feedback col-md-12"><small><i>% di variazione massima consentita in aumento e/o diminuzione della durata minima dell'UF</i></small></div>
                                 </div>
                             </div> 
                             <div class="col-md-4">

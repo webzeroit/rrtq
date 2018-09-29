@@ -387,7 +387,7 @@ if (array_key_exists('standard_formativo', $profilo))
                                                                 <td><?php echo  $uf["ore_min_durata_uf"] ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <td ><b>Percentuale di variazione consentita in aumento e/o diminuzione della durata minima dell'UF</td>
+                                                                <td ><b>Percentuale di variazione massima consentita in aumento e/o diminuzione della durata minima dell'UF</td>
                                                                 <td><?php echo $uf["perc_varianza"] ?>%</td>
                                                             </tr>                                                             
                                                             <tr>
