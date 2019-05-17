@@ -25,7 +25,14 @@
                                  $this->ion_auth->in_group($this->config->item('role_supervisore')) ) { ?>
                             
                             <li><a href="<?php echo base_url('admin/export') ?>">Interscambio dati ATLANTE</a></li>
-                        <?php } ?>
+                        <?php } 
+                            if ( $this->ion_auth->is_admin() || 
+                                 $this->ion_auth->in_group($this->config->item('role_responsabile')) ||
+                                 $this->ion_auth->in_group($this->config->item('role_supervisore'))
+                                ) { ?>
+                            
+                            <li><a href="<?php echo base_url('admin/archiviopubblicazioni') ?>">Archivio pubblicazioni</a></li>
+                        <?php } ?>                            
                     </ul>
                 </li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-table"></i><span class="hide-menu">Tabelle</span></a>
